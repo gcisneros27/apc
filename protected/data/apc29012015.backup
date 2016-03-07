@@ -1,0 +1,4087 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.1.14
+-- Dumped by pg_dump version 9.1.14
+-- Started on 2016-01-29 10:07:39 VET
+
+SET statement_timeout = 0;
+SET client_encoding = 'LATIN8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- TOC entry 6 (class 2615 OID 36786)
+-- Name: geo_ubicacion; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA geo_ubicacion;
+
+
+ALTER SCHEMA geo_ubicacion OWNER TO postgres;
+
+--
+-- TOC entry 7 (class 2615 OID 36787)
+-- Name: seguridad; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA seguridad;
+
+
+ALTER SCHEMA seguridad OWNER TO postgres;
+
+--
+-- TOC entry 201 (class 3079 OID 11645)
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- TOC entry 2140 (class 0 OID 0)
+-- Dependencies: 201
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET search_path = geo_ubicacion, pg_catalog;
+
+--
+-- TOC entry 163 (class 1259 OID 36788)
+-- Dependencies: 6
+-- Name: geo_estado_geo_estado_id_seq; Type: SEQUENCE; Schema: geo_ubicacion; Owner: postgres
+--
+
+CREATE SEQUENCE geo_estado_geo_estado_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE geo_ubicacion.geo_estado_geo_estado_id_seq OWNER TO postgres;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- TOC entry 164 (class 1259 OID 36790)
+-- Dependencies: 1884 6
+-- Name: geo_estado; Type: TABLE; Schema: geo_ubicacion; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE geo_estado (
+    geo_estado_id integer DEFAULT nextval('geo_estado_geo_estado_id_seq'::regclass) NOT NULL,
+    nombre text
+);
+
+
+ALTER TABLE geo_ubicacion.geo_estado OWNER TO postgres;
+
+--
+-- TOC entry 165 (class 1259 OID 36797)
+-- Dependencies: 6
+-- Name: geo_municipio_geo_municipio_id_seq; Type: SEQUENCE; Schema: geo_ubicacion; Owner: postgres
+--
+
+CREATE SEQUENCE geo_municipio_geo_municipio_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE geo_ubicacion.geo_municipio_geo_municipio_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 166 (class 1259 OID 36799)
+-- Dependencies: 1885 6
+-- Name: geo_municipio; Type: TABLE; Schema: geo_ubicacion; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE geo_municipio (
+    geo_municipio_id integer DEFAULT nextval('geo_municipio_geo_municipio_id_seq'::regclass) NOT NULL,
+    geo_estado_id integer,
+    nombre text
+);
+
+
+ALTER TABLE geo_ubicacion.geo_municipio OWNER TO postgres;
+
+--
+-- TOC entry 167 (class 1259 OID 36806)
+-- Dependencies: 6
+-- Name: geo_parroquia_geo_parroquia_id_seq; Type: SEQUENCE; Schema: geo_ubicacion; Owner: postgres
+--
+
+CREATE SEQUENCE geo_parroquia_geo_parroquia_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE geo_ubicacion.geo_parroquia_geo_parroquia_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 168 (class 1259 OID 36808)
+-- Dependencies: 1886 6
+-- Name: geo_parroquia; Type: TABLE; Schema: geo_ubicacion; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE geo_parroquia (
+    geo_parroquia_id integer DEFAULT nextval('geo_parroquia_geo_parroquia_id_seq'::regclass) NOT NULL,
+    geo_municipio_id integer,
+    nombre text
+);
+
+
+ALTER TABLE geo_ubicacion.geo_parroquia OWNER TO postgres;
+
+SET search_path = public, pg_catalog;
+
+--
+-- TOC entry 169 (class 1259 OID 36815)
+-- Dependencies: 1888 8
+-- Name: addendum; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE addendum (
+    id_addendum integer NOT NULL,
+    fecha_addendum date,
+    monto_addendum numeric(20,2),
+    id_estatus_addendum bigint,
+    st_addendum boolean DEFAULT true NOT NULL,
+    id_contrato bigint,
+    id_punto_cuenta bigint,
+    nu_addendum text
+);
+
+
+ALTER TABLE public.addendum OWNER TO postgres;
+
+--
+-- TOC entry 170 (class 1259 OID 36821)
+-- Dependencies: 8 169
+-- Name: addendum_id_addendum_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE addendum_id_addendum_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.addendum_id_addendum_seq OWNER TO postgres;
+
+--
+-- TOC entry 2141 (class 0 OID 0)
+-- Dependencies: 170
+-- Name: addendum_id_addendum_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE addendum_id_addendum_seq OWNED BY addendum.id_addendum;
+
+
+--
+-- TOC entry 171 (class 1259 OID 36823)
+-- Dependencies: 1889 8
+-- Name: contrato; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE contrato (
+    id_contrato integer NOT NULL,
+    id_punto_cuenta bigint,
+    co_contrato character varying(30),
+    nb_obra text,
+    objeto text,
+    id_estado bigint,
+    id_municipio bigint,
+    id_parroquia bigint,
+    id_tp_contrato bigint,
+    id_institucion bigint,
+    fecha_suscripcion date,
+    fecha_culminacion date,
+    monto_total numeric(20,2),
+    avance_financiero numeric(5,2),
+    avance_fisico numeric(5,2),
+    observaciones text,
+    id_estatus bigint,
+    nb_constructor text,
+    telf_constructor text,
+    correo_constructor text,
+    nb_inspector text,
+    telf_inspector text,
+    correo_inspector text,
+    st_contrato boolean DEFAULT true NOT NULL
+);
+
+
+ALTER TABLE public.contrato OWNER TO postgres;
+
+--
+-- TOC entry 172 (class 1259 OID 36830)
+-- Dependencies: 171 8
+-- Name: contrato_id_contrato_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE contrato_id_contrato_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.contrato_id_contrato_seq OWNER TO postgres;
+
+--
+-- TOC entry 2142 (class 0 OID 0)
+-- Dependencies: 172
+-- Name: contrato_id_contrato_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE contrato_id_contrato_seq OWNED BY contrato.id_contrato;
+
+
+--
+-- TOC entry 173 (class 1259 OID 36832)
+-- Dependencies: 1891 8
+-- Name: estatus_addendum; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE estatus_addendum (
+    id_estatus_addendum integer NOT NULL,
+    nb_estatus_addendum text,
+    st_estatus_addendum boolean DEFAULT true NOT NULL
+);
+
+
+ALTER TABLE public.estatus_addendum OWNER TO postgres;
+
+--
+-- TOC entry 174 (class 1259 OID 36839)
+-- Dependencies: 8 173
+-- Name: estatus_addendum_id_estatus_addendum_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE estatus_addendum_id_estatus_addendum_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.estatus_addendum_id_estatus_addendum_seq OWNER TO postgres;
+
+--
+-- TOC entry 2143 (class 0 OID 0)
+-- Dependencies: 174
+-- Name: estatus_addendum_id_estatus_addendum_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE estatus_addendum_id_estatus_addendum_seq OWNED BY estatus_addendum.id_estatus_addendum;
+
+
+--
+-- TOC entry 175 (class 1259 OID 36841)
+-- Dependencies: 8
+-- Name: estatus_contrato; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE estatus_contrato (
+    id_estatus_contrato integer NOT NULL,
+    nb_estatus_contrato text,
+    st_estatus_contrato boolean
+);
+
+
+ALTER TABLE public.estatus_contrato OWNER TO postgres;
+
+--
+-- TOC entry 176 (class 1259 OID 36847)
+-- Dependencies: 8 175
+-- Name: estatus_contrato_id_estatus_contrato_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE estatus_contrato_id_estatus_contrato_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.estatus_contrato_id_estatus_contrato_seq OWNER TO postgres;
+
+--
+-- TOC entry 2144 (class 0 OID 0)
+-- Dependencies: 176
+-- Name: estatus_contrato_id_estatus_contrato_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE estatus_contrato_id_estatus_contrato_seq OWNED BY estatus_contrato.id_estatus_contrato;
+
+
+--
+-- TOC entry 177 (class 1259 OID 36849)
+-- Dependencies: 1894 8
+-- Name: funcionario; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE funcionario (
+    id_funcionario integer NOT NULL,
+    nb_funcionario text NOT NULL,
+    cargo_funcionario text,
+    st_funcionario boolean DEFAULT true NOT NULL
+);
+
+
+ALTER TABLE public.funcionario OWNER TO postgres;
+
+--
+-- TOC entry 178 (class 1259 OID 36856)
+-- Dependencies: 177 8
+-- Name: funcionario_id_funcionario_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE funcionario_id_funcionario_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.funcionario_id_funcionario_seq OWNER TO postgres;
+
+--
+-- TOC entry 2145 (class 0 OID 0)
+-- Dependencies: 178
+-- Name: funcionario_id_funcionario_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE funcionario_id_funcionario_seq OWNED BY funcionario.id_funcionario;
+
+
+--
+-- TOC entry 179 (class 1259 OID 36858)
+-- Dependencies: 8
+-- Name: institucion; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE institucion (
+    id_institucion integer NOT NULL,
+    nb_institucion text,
+    st_institucion boolean
+);
+
+
+ALTER TABLE public.institucion OWNER TO postgres;
+
+--
+-- TOC entry 180 (class 1259 OID 36864)
+-- Dependencies: 179 8
+-- Name: institucion_id_institucion_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE institucion_id_institucion_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.institucion_id_institucion_seq OWNER TO postgres;
+
+--
+-- TOC entry 2146 (class 0 OID 0)
+-- Dependencies: 180
+-- Name: institucion_id_institucion_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE institucion_id_institucion_seq OWNED BY institucion.id_institucion;
+
+
+--
+-- TOC entry 181 (class 1259 OID 36866)
+-- Dependencies: 8
+-- Name: moneda; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE moneda (
+    id_moneda integer NOT NULL,
+    nb_moneda character varying(20) NOT NULL,
+    simbolo character varying(5),
+    st_moneda boolean
+);
+
+
+ALTER TABLE public.moneda OWNER TO postgres;
+
+--
+-- TOC entry 182 (class 1259 OID 36869)
+-- Dependencies: 181 8
+-- Name: moneda_id_moneda_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE moneda_id_moneda_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.moneda_id_moneda_seq OWNER TO postgres;
+
+--
+-- TOC entry 2147 (class 0 OID 0)
+-- Dependencies: 182
+-- Name: moneda_id_moneda_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE moneda_id_moneda_seq OWNED BY moneda.id_moneda;
+
+
+--
+-- TOC entry 183 (class 1259 OID 36871)
+-- Dependencies: 8
+-- Name: persona; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE persona (
+    nacionalidad character(1),
+    id_persona integer NOT NULL,
+    cedula integer,
+    nombre1 text,
+    nombre2 text,
+    apellido1 text,
+    apellido2 text,
+    telefono text,
+    fe_nacimiento date,
+    correo text,
+    usuario_id_aud bigint
+);
+
+
+ALTER TABLE public.persona OWNER TO postgres;
+
+--
+-- TOC entry 184 (class 1259 OID 36877)
+-- Dependencies: 8 183
+-- Name: persona_id_persona_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE persona_id_persona_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.persona_id_persona_seq OWNER TO postgres;
+
+--
+-- TOC entry 2148 (class 0 OID 0)
+-- Dependencies: 184
+-- Name: persona_id_persona_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE persona_id_persona_seq OWNED BY persona.id_persona;
+
+
+--
+-- TOC entry 185 (class 1259 OID 36879)
+-- Dependencies: 1899 1900 8
+-- Name: punto_cuenta; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE punto_cuenta (
+    id_punto_cuenta integer NOT NULL,
+    id_punto_padre bigint,
+    presidencial boolean DEFAULT false NOT NULL,
+    monto_bs numeric(20,2) NOT NULL,
+    monto_disp_bs numeric(20,2),
+    monto_dv numeric(15,2),
+    monto_disp_dv numeric(15,2),
+    id_tp_moneda bigint,
+    id_tp_recurso bigint,
+    asunto text,
+    descripcion text,
+    presentado text,
+    id_funcionario bigint,
+    fecha_aprobacion date,
+    co_punto_cuenta character varying(10),
+    st_punto_cuenta boolean DEFAULT true NOT NULL,
+    recomendaciones text
+);
+
+
+ALTER TABLE public.punto_cuenta OWNER TO postgres;
+
+--
+-- TOC entry 186 (class 1259 OID 36887)
+-- Dependencies: 8 185
+-- Name: punto_cuenta_id_punto_cuenta_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE punto_cuenta_id_punto_cuenta_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.punto_cuenta_id_punto_cuenta_seq OWNER TO postgres;
+
+--
+-- TOC entry 2149 (class 0 OID 0)
+-- Dependencies: 186
+-- Name: punto_cuenta_id_punto_cuenta_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE punto_cuenta_id_punto_cuenta_seq OWNED BY punto_cuenta.id_punto_cuenta;
+
+
+--
+-- TOC entry 187 (class 1259 OID 36889)
+-- Dependencies: 8
+-- Name: session; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE session (
+    id character(32) NOT NULL,
+    expire integer,
+    data bytea
+);
+
+
+ALTER TABLE public.session OWNER TO postgres;
+
+--
+-- TOC entry 188 (class 1259 OID 36895)
+-- Dependencies: 8
+-- Name: tipo_contrato; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE tipo_contrato (
+    id_tp_contrato integer NOT NULL,
+    nb_tp_contrato text,
+    st_tp_contrato boolean
+);
+
+
+ALTER TABLE public.tipo_contrato OWNER TO postgres;
+
+--
+-- TOC entry 189 (class 1259 OID 36901)
+-- Dependencies: 8 188
+-- Name: tipo_contrato_id_tp_contrato_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE tipo_contrato_id_tp_contrato_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.tipo_contrato_id_tp_contrato_seq OWNER TO postgres;
+
+--
+-- TOC entry 2150 (class 0 OID 0)
+-- Dependencies: 189
+-- Name: tipo_contrato_id_tp_contrato_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE tipo_contrato_id_tp_contrato_seq OWNED BY tipo_contrato.id_tp_contrato;
+
+
+--
+-- TOC entry 190 (class 1259 OID 36903)
+-- Dependencies: 8
+-- Name: tipo_recurso; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE tipo_recurso (
+    id_tp_recurso integer NOT NULL,
+    nb_tp_recurso text,
+    st_tp_recurso boolean
+);
+
+
+ALTER TABLE public.tipo_recurso OWNER TO postgres;
+
+--
+-- TOC entry 191 (class 1259 OID 36909)
+-- Dependencies: 190 8
+-- Name: tipo_recurso_id_tp_recurso_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE tipo_recurso_id_tp_recurso_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.tipo_recurso_id_tp_recurso_seq OWNER TO postgres;
+
+--
+-- TOC entry 2151 (class 0 OID 0)
+-- Dependencies: 191
+-- Name: tipo_recurso_id_tp_recurso_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE tipo_recurso_id_tp_recurso_seq OWNED BY tipo_recurso.id_tp_recurso;
+
+
+SET search_path = seguridad, pg_catalog;
+
+--
+-- TOC entry 192 (class 1259 OID 36911)
+-- Dependencies: 7
+-- Name: authassignment; Type: TABLE; Schema: seguridad; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE authassignment (
+    itemname character varying(64) NOT NULL,
+    userid bigint NOT NULL,
+    bizrule text,
+    data text,
+    usu_aud_id bigint,
+    usuario_id_aud bigint
+);
+
+
+ALTER TABLE seguridad.authassignment OWNER TO postgres;
+
+--
+-- TOC entry 193 (class 1259 OID 36917)
+-- Dependencies: 7
+-- Name: authitem; Type: TABLE; Schema: seguridad; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE authitem (
+    name character varying(64) NOT NULL,
+    type integer NOT NULL,
+    description text,
+    bizrule text,
+    data text,
+    usuario_id_aud bigint
+);
+
+
+ALTER TABLE seguridad.authitem OWNER TO postgres;
+
+--
+-- TOC entry 194 (class 1259 OID 36923)
+-- Dependencies: 7
+-- Name: authitemchild; Type: TABLE; Schema: seguridad; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE authitemchild (
+    parent character varying(64) NOT NULL,
+    child character varying(64) NOT NULL,
+    usuario_id_aud bigint
+);
+
+
+ALTER TABLE seguridad.authitemchild OWNER TO postgres;
+
+--
+-- TOC entry 195 (class 1259 OID 36926)
+-- Dependencies: 7
+-- Name: m_menus; Type: TABLE; Schema: seguridad; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE m_menus (
+    id_menu integer NOT NULL,
+    id_menu_padre bigint,
+    nombre_menu text,
+    orden integer,
+    icono text,
+    id_usuario_creador integer,
+    id_usuario_modificador integer,
+    fecha_creacion timestamp without time zone,
+    fecha_modificacion timestamp without time zone,
+    color_texto text,
+    color_interfaz text
+);
+
+
+ALTER TABLE seguridad.m_menus OWNER TO postgres;
+
+--
+-- TOC entry 196 (class 1259 OID 36932)
+-- Dependencies: 7 195
+-- Name: m_menus_id_menu_seq; Type: SEQUENCE; Schema: seguridad; Owner: postgres
+--
+
+CREATE SEQUENCE m_menus_id_menu_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE seguridad.m_menus_id_menu_seq OWNER TO postgres;
+
+--
+-- TOC entry 2152 (class 0 OID 0)
+-- Dependencies: 196
+-- Name: m_menus_id_menu_seq; Type: SEQUENCE OWNED BY; Schema: seguridad; Owner: postgres
+--
+
+ALTER SEQUENCE m_menus_id_menu_seq OWNED BY m_menus.id_menu;
+
+
+--
+-- TOC entry 197 (class 1259 OID 36934)
+-- Dependencies: 1905 7
+-- Name: r_menus_authitem; Type: TABLE; Schema: seguridad; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE r_menus_authitem (
+    id_item_authitem integer NOT NULL,
+    id_menu bigint,
+    orden integer,
+    nombre_item text,
+    operacion text,
+    fecha_creacion timestamp without time zone,
+    fecha_expiracion timestamp without time zone,
+    estatus_usuario_activo boolean DEFAULT true,
+    id_usuario_creador bigint,
+    id_usuario_modificador bigint,
+    ruta_imagen text
+);
+
+
+ALTER TABLE seguridad.r_menus_authitem OWNER TO postgres;
+
+--
+-- TOC entry 198 (class 1259 OID 36941)
+-- Dependencies: 197 7
+-- Name: r_menus_authitem_id_item_authitem_seq; Type: SEQUENCE; Schema: seguridad; Owner: postgres
+--
+
+CREATE SEQUENCE r_menus_authitem_id_item_authitem_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE seguridad.r_menus_authitem_id_item_authitem_seq OWNER TO postgres;
+
+--
+-- TOC entry 2153 (class 0 OID 0)
+-- Dependencies: 198
+-- Name: r_menus_authitem_id_item_authitem_seq; Type: SEQUENCE OWNED BY; Schema: seguridad; Owner: postgres
+--
+
+ALTER SEQUENCE r_menus_authitem_id_item_authitem_seq OWNED BY r_menus_authitem.id_item_authitem;
+
+
+--
+-- TOC entry 199 (class 1259 OID 36943)
+-- Dependencies: 1907 7
+-- Name: usuario; Type: TABLE; Schema: seguridad; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE usuario (
+    id_usuario bigint NOT NULL,
+    tx_usuario text NOT NULL,
+    tx_contrasena text NOT NULL,
+    bo_activado boolean,
+    persona_id bigint,
+    st_usuario boolean DEFAULT true,
+    usuario_id_aud bigint,
+    institucion_id bigint
+);
+
+
+ALTER TABLE seguridad.usuario OWNER TO postgres;
+
+--
+-- TOC entry 200 (class 1259 OID 36950)
+-- Dependencies: 199 7
+-- Name: usuario_id_usuario_seq; Type: SEQUENCE; Schema: seguridad; Owner: postgres
+--
+
+CREATE SEQUENCE usuario_id_usuario_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE seguridad.usuario_id_usuario_seq OWNER TO postgres;
+
+--
+-- TOC entry 2154 (class 0 OID 0)
+-- Dependencies: 200
+-- Name: usuario_id_usuario_seq; Type: SEQUENCE OWNED BY; Schema: seguridad; Owner: postgres
+--
+
+ALTER SEQUENCE usuario_id_usuario_seq OWNED BY usuario.id_usuario;
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- TOC entry 1887 (class 2604 OID 36952)
+-- Dependencies: 170 169
+-- Name: id_addendum; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY addendum ALTER COLUMN id_addendum SET DEFAULT nextval('addendum_id_addendum_seq'::regclass);
+
+
+--
+-- TOC entry 1890 (class 2604 OID 36953)
+-- Dependencies: 172 171
+-- Name: id_contrato; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY contrato ALTER COLUMN id_contrato SET DEFAULT nextval('contrato_id_contrato_seq'::regclass);
+
+
+--
+-- TOC entry 1892 (class 2604 OID 36954)
+-- Dependencies: 174 173
+-- Name: id_estatus_addendum; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY estatus_addendum ALTER COLUMN id_estatus_addendum SET DEFAULT nextval('estatus_addendum_id_estatus_addendum_seq'::regclass);
+
+
+--
+-- TOC entry 1893 (class 2604 OID 36955)
+-- Dependencies: 176 175
+-- Name: id_estatus_contrato; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY estatus_contrato ALTER COLUMN id_estatus_contrato SET DEFAULT nextval('estatus_contrato_id_estatus_contrato_seq'::regclass);
+
+
+--
+-- TOC entry 1895 (class 2604 OID 36956)
+-- Dependencies: 178 177
+-- Name: id_funcionario; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY funcionario ALTER COLUMN id_funcionario SET DEFAULT nextval('funcionario_id_funcionario_seq'::regclass);
+
+
+--
+-- TOC entry 1896 (class 2604 OID 36957)
+-- Dependencies: 180 179
+-- Name: id_institucion; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY institucion ALTER COLUMN id_institucion SET DEFAULT nextval('institucion_id_institucion_seq'::regclass);
+
+
+--
+-- TOC entry 1897 (class 2604 OID 36958)
+-- Dependencies: 182 181
+-- Name: id_moneda; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY moneda ALTER COLUMN id_moneda SET DEFAULT nextval('moneda_id_moneda_seq'::regclass);
+
+
+--
+-- TOC entry 1898 (class 2604 OID 36959)
+-- Dependencies: 184 183
+-- Name: id_persona; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY persona ALTER COLUMN id_persona SET DEFAULT nextval('persona_id_persona_seq'::regclass);
+
+
+--
+-- TOC entry 1901 (class 2604 OID 36960)
+-- Dependencies: 186 185
+-- Name: id_punto_cuenta; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY punto_cuenta ALTER COLUMN id_punto_cuenta SET DEFAULT nextval('punto_cuenta_id_punto_cuenta_seq'::regclass);
+
+
+--
+-- TOC entry 1902 (class 2604 OID 36961)
+-- Dependencies: 189 188
+-- Name: id_tp_contrato; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY tipo_contrato ALTER COLUMN id_tp_contrato SET DEFAULT nextval('tipo_contrato_id_tp_contrato_seq'::regclass);
+
+
+--
+-- TOC entry 1903 (class 2604 OID 36962)
+-- Dependencies: 191 190
+-- Name: id_tp_recurso; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY tipo_recurso ALTER COLUMN id_tp_recurso SET DEFAULT nextval('tipo_recurso_id_tp_recurso_seq'::regclass);
+
+
+SET search_path = seguridad, pg_catalog;
+
+--
+-- TOC entry 1904 (class 2604 OID 36963)
+-- Dependencies: 196 195
+-- Name: id_menu; Type: DEFAULT; Schema: seguridad; Owner: postgres
+--
+
+ALTER TABLE ONLY m_menus ALTER COLUMN id_menu SET DEFAULT nextval('m_menus_id_menu_seq'::regclass);
+
+
+--
+-- TOC entry 1906 (class 2604 OID 36964)
+-- Dependencies: 198 197
+-- Name: id_item_authitem; Type: DEFAULT; Schema: seguridad; Owner: postgres
+--
+
+ALTER TABLE ONLY r_menus_authitem ALTER COLUMN id_item_authitem SET DEFAULT nextval('r_menus_authitem_id_item_authitem_seq'::regclass);
+
+
+--
+-- TOC entry 1908 (class 2604 OID 36965)
+-- Dependencies: 200 199
+-- Name: id_usuario; Type: DEFAULT; Schema: seguridad; Owner: postgres
+--
+
+ALTER TABLE ONLY usuario ALTER COLUMN id_usuario SET DEFAULT nextval('usuario_id_usuario_seq'::regclass);
+
+
+SET search_path = geo_ubicacion, pg_catalog;
+
+--
+-- TOC entry 2096 (class 0 OID 36790)
+-- Dependencies: 164 2133
+-- Data for Name: geo_estado; Type: TABLE DATA; Schema: geo_ubicacion; Owner: postgres
+--
+
+COPY geo_estado (geo_estado_id, nombre) FROM stdin;
+1	DISTRITO CAPITAL
+2	AMAZONAS
+3	ANZOATEGUI
+4	APURE
+5	ARAGUA
+6	BARINAS
+7	BOLIVAR
+8	CARABOBO
+9	COJEDES
+10	DELTA AMACURO
+11	FALCON
+12	GUARICO
+13	LARA
+14	MERIDA
+15	MIRANDA
+16	MONAGAS
+17	NUEVA ESPARTA
+18	PORTUGUESA
+19	SUCRE
+20	TACHIRA
+21	TRUJILLO
+22	YARACUY
+23	ZULIA
+24	VARGAS
+25	DEPENDENCIAS FEDERALES
+\.
+
+
+--
+-- TOC entry 2155 (class 0 OID 0)
+-- Dependencies: 163
+-- Name: geo_estado_geo_estado_id_seq; Type: SEQUENCE SET; Schema: geo_ubicacion; Owner: postgres
+--
+
+SELECT pg_catalog.setval('geo_estado_geo_estado_id_seq', 27, true);
+
+
+--
+-- TOC entry 2098 (class 0 OID 36799)
+-- Dependencies: 166 2133
+-- Data for Name: geo_municipio; Type: TABLE DATA; Schema: geo_ubicacion; Owner: postgres
+--
+
+COPY geo_municipio (geo_municipio_id, geo_estado_id, nombre) FROM stdin;
+34	2	AUTONOMO ATABAPO
+1	15	ACEVEDO
+2	4	ACHAGUAS
+3	16	ACOSTA
+4	11	ACOSTA
+5	18	AGUA BLANCA
+6	16	AGUASAY
+7	14	ALBERTO ADRIANI
+8	6	ALBERTO ARVELO TORREALBA
+9	23	ALMIRANTE PADILLA
+10	3	ANACO
+11	14	ANDRES BELLO
+12	20	ANDRES BELLO
+13	15	ANDRES BELLO
+14	21	ANDRES BELLO
+15	19	ANDRES ELOY BLANCO
+16	6	ANDRES ELOY BLANCO
+17	13	ANDRES ELOY BLANCO
+18	19	ANDRES MATA
+19	17	ANTOLIN DEL CAMPO
+20	10	ANTONIO DIAZ
+21	6	ANTONIO JOSE DE SUCRE
+22	14	ANTONIO PINTO SALINAS
+23	20	ANTONIO ROMULO COSTA
+24	9	ANZOATEGUI
+25	3	ARAGUA
+26	18	ARAURE
+27	14	ARICAGUA
+28	19	ARISMENDI
+29	17	ARISMENDI
+30	6	ARISMENDI
+31	22	ARISTIDES BASTIDAS
+32	14	ARZOBISPO CHACON
+33	2	AUTONOMO ALTO ORINOCO
+35	2	AUTONOMO ATURES
+36	2	AUTONOMO AUTANA
+37	2	AUTONOMO MANAPIARE
+38	2	AUTONOMO MAROA
+39	2	AUTONOMO RIO NEGRO
+40	20	AYACUCHO
+41	23	BARALT
+42	6	BARINAS
+43	15	BARUTA
+44	8	BEJUMA
+45	19	BENITEZ
+46	19	BERMUDEZ
+47	4	BIRUACA
+48	21	BOCONO
+49	16	BOLIVAR
+50	5	BOLIVAR
+51	19	BOLIVAR
+52	11	BOLIVAR
+53	6	BOLIVAR
+54	21	BOLIVAR
+55	22	BOLIVAR
+56	20	BOLIVAR
+57	15	BRION
+58	22	BRUZUAL
+59	11	BUCHIVACOA
+60	15	BUROZ
+61	23	CABIMAS
+62	11	CACIQUE MANAURE
+63	19	CAJIGAL
+64	12	CAMAGUAN
+65	5	CAMATAGUA
+66	14	CAMPO ELIAS
+67	21	CANDELARIA
+68	14	CARACCIOLO PARRA OLMEDO
+69	21	CARACHE
+70	14	CARDENAL QUINTERO
+71	20	CARDENAS
+72	16	CARIPE
+73	11	CARIRUBANA
+74	8	CARLOS ARVELO
+75	7	CARONI
+76	15	CARRIZAL
+77	10	CASACOIMA
+78	23	CATATUMBO
+79	7	CEDENO
+80	16	CEDENO
+81	15	CHACAO
+82	12	CHAGUARAMAS
+83	22	COCOROTE
+84	11	COLINA
+85	23	COLON
+86	20	CORDOBA
+87	13	CRESPO
+88	15	CRISTOBAL ROJAS
+89	6	CRUZ PAREDES
+90	19	CRUZ SALMERON ACOSTA
+91	11	DABAJURO
+92	11	DEMOCRACIA
+93	17	DIAZ
+94	3	DIEGO BAUTISTA URBANEJA
+95	8	DIEGO IBARRA
+96	7	EL CALLAO
+97	15	EL HATILLO
+98	12	EL SOCORRO
+99	21	ESCUQUE
+100	18	ESTELLER
+101	16	EZEQUIEL ZAMORA
+102	6	EZEQUIEL ZAMORA
+103	11	FALCON
+330	22	VEROES
+105	11	FEDERACION
+106	20	FERNANDEZ FEO
+107	3	FERNANDO DE PENALVER
+108	3	FRANCISCO DE MIRANDA
+109	12	FRANCISCO DE MIRANDA
+110	20	FRANCISCO DE MIRANDA
+111	3	FRANCISCO DEL CARMEN CARVAJAL
+112	23	FRANCISCO JAVIER PULGAR
+113	5	FRANCISCO LINARES ALCANTARA
+114	17	GARCIA
+115	20	GARCIA DE HEVIA
+116	5	GIRARDOT
+117	9	GIRARDOT
+118	17	GOMEZ
+119	7	GRAN SABANA
+120	8	GUACARA
+121	15	GUAICAIPURO
+122	18	GUANARE
+123	18	GUANARITO
+124	3	GUANTA
+125	14	GUARAQUE
+126	20	GUASIMOS
+127	7	HERES
+128	15	INDEPENDENCIA
+129	20	INDEPENDENCIA
+130	22	INDEPENDENCIA
+131	3	INDEPENDENCIA
+132	13	IRIBARREN
+133	11	JACURA
+134	20	JAUREGUI
+135	23	JESUS ENRIQUE LOSSADA
+136	23	JESUS MARIA SEMPRUN
+137	13	JIMENEZ
+138	5	JOSE ANGEL LAMAS
+139	22	JOSE ANTONIO PAEZ
+140	21	JOSE FELIPE MARQUEZ CANIZALES
+141	12	JOSE FELIX RIBAS
+142	5	JOSE FELIX RIBAS
+143	3	JOSE GREGORIO MONAGAS
+144	20	JOSE MARIA VARGAS
+145	5	JOSE RAFAEL REVENGA
+146	12	JOSE TADEO MONAGAS
+147	3	JUAN ANTONIO SOTILLO
+148	12	JUAN GERMAN ROSCIO
+149	8	JUAN JOSE MORA
+150	3	JUAN MANUEL CAJIGAL
+151	21	JUAN VICENTE CAMPO ELIAS
+152	12	JULIAN MELLADO
+153	14	JULIO CESAR SALAS
+154	20	JUNIN
+155	14	JUSTO BRICENO
+156	23	LA CANADA DE URDANETA
+157	21	LA CEIBA
+158	22	LA TRINIDAD
+159	23	LAGUNILLAS
+160	15	LANDER
+161	12	LAS MERCEDES
+162	12	LEONARDO INFANTE
+163	20	LIBERTAD
+164	3	LIBERTAD
+165	1	LIBERTADOR
+166	14	LIBERTADOR
+167	19	LIBERTADOR
+168	8	LIBERTADOR
+169	16	LIBERTADOR
+170	5	LIBERTADOR
+171	20	LIBERTADOR
+172	9	LIMA BLANCO
+173	20	LOBATERA
+174	8	LOS GUAYOS
+175	15	LOS SALIAS
+176	11	LOS TAQUES
+177	23	MACHIQUES DE PERIJA
+178	17	MANEIRO
+179	3	MANUEL EZEQUIEL BRUZUAL
+180	22	MANUEL MONGE
+181	23	MARA
+182	23	MARACAIBO
+183	17	MARCANO
+184	19	MARINO
+185	17	MARINO
+186	5	MARIO BRICENO IRAGORRY
+187	16	MATURIN
+188	11	MAUROA
+189	19	MEJIA
+190	20	MICHELENA
+191	11	MIRANDA
+192	8	MIRANDA
+193	21	MIRANDA
+194	23	MIRANDA
+195	14	MIRANDA
+196	11	MONSENOR ITURRIZA
+197	18	MONSENOR JOSE VICENTE DE UNDA
+198	8	MONTALBAN
+199	21	MONTE CARMELO
+200	19	MONTES
+201	13	MORAN
+202	21	MOTATAN
+203	4	MUNOZ
+204	8	NAGUANAGUA
+205	22	NIRGUA
+206	14	OBISPO RAMOS DE LORA
+207	6	OBISPOS
+208	5	OCUMARE DE LA COSTA DE ORO
+209	12	ORTIZ
+210	18	OSPINO
+211	14	PADRE NOGUERA
+212	7	PADRE PEDRO CHIEN
+213	23	PAEZ
+214	18	PAEZ
+215	4	PAEZ
+216	15	PAEZ
+217	13	PALAVECINO
+218	11	PALMASOLA
+219	21	PAMPAN
+220	21	PAMPANITO
+221	20	PANAMERICANO
+222	9	PAO DE SAN JUAN BAUTISTA
+223	18	PAPELON
+224	15	PAZ CASTILLO
+225	10	PEDERNALES
+226	6	PEDRAZA
+227	4	PEDRO CAMEJO
+228	15	PEDRO GUAL
+229	3	PEDRO MARIA FREITES
+230	20	PEDRO MARIA URENA
+231	12	PEDRO ZARAZA
+232	22	PENA
+233	17	PENINSULA DE MACANAO
+234	11	PETIT
+235	7	PIAR
+236	16	PIAR
+237	11	PIRITU
+238	3	PIRITU
+239	15	PLAZA
+240	14	PUEBLO LLANO
+241	8	PUERTO CABELLO
+242	16	PUNCERES
+243	21	RAFAEL RANGEL
+244	20	RAFAEL URDANETA
+245	14	RANGEL
+246	7	RAUL LEONI
+247	19	RIBERO
+248	9	RICAURTE
+249	14	RIVAS DAVILA
+250	6	ROJAS
+251	4	ROMULO GALLEGOS
+252	9	ROMULO GALLEGOS
+253	23	ROSARIO DE PERIJA
+254	7	ROSCIO
+255	20	SAMUEL DARIO MALDONADO
+256	9	SAN CARLOS
+257	5	SAN CASIMIRO
+258	20	SAN CRISTOBAL
+259	8	SAN DIEGO
+260	22	SAN FELIPE
+261	4	SAN FERNANDO
+262	11	SAN FRANCISCO
+263	23	SAN FRANCISCO
+264	18	SAN GENARO DE BOCONOITO
+265	12	SAN GERONIMO DE GUAYABAL
+266	8	SAN JOAQUIN
+267	3	SAN JOSE DE GUANIPA
+268	12	SAN JOSE DE GUARIBE
+269	3	SAN JUAN DE CAPISTRANO
+270	20	SAN JUDAS TADEO
+271	21	SAN RAFAEL DE CARVAJAL
+272	18	SAN RAFAEL DE ONOTO
+273	5	SAN SEBASTIAN
+274	3	SANTA ANA
+275	16	SANTA BARBARA
+276	12	SANTA MARIA DE IPIRE
+277	23	SANTA RITA
+278	18	SANTA ROSALIA
+279	5	SANTIAGO MARINO
+280	14	SANTOS MARQUINA
+281	5	SANTOS MICHELENA
+282	20	SEBORUCO
+283	7	SIFONTES
+284	11	SILVA
+285	15	SIMON BOLIVAR
+286	3	SIMON BOLIVAR
+287	23	SIMON BOLIVAR
+288	13	SIMON PLANAS
+289	3	SIMON RODRIGUEZ
+290	20	SIMON RODRIGUEZ
+291	3	SIR ARTHUR MC GREGOR
+292	6	SOSA
+293	16	SOTILLO
+294	20	SUCRE
+295	23	SUCRE
+296	5	SUCRE
+297	18	SUCRE
+298	11	SUCRE
+299	21	SUCRE
+300	14	SUCRE
+301	19	SUCRE
+302	7	SUCRE
+303	22	SUCRE
+304	15	SUCRE
+305	9	TINACO
+306	11	TOCOPERO
+307	20	TORBES
+308	13	TORRES
+309	14	TOVAR
+310	5	TOVAR
+311	21	TRUJILLO
+312	17	TUBORES
+313	10	TUCUPITA
+314	14	TULIO FEBRES CORDERO
+315	18	TUREN
+316	11	UNION
+317	22	URACHICHE
+318	16	URACOA
+319	5	URDANETA
+320	13	URDANETA
+321	15	URDANETA
+322	21	URDANETA
+323	20	URIBANTE
+324	11	URUMACO
+325	19	VALDEZ
+326	8	VALENCIA
+327	21	VALERA
+328	23	VALMORE RODRIGUEZ
+329	24	VARGAS
+331	17	VILLALBA
+332	11	ZAMORA
+333	5	ZAMORA
+334	15	ZAMORA
+335	14	ZEA
+343	25	DEPENDENCIAS FEDERALES
+344	1	OTRO
+345	2	OTRO
+346	3	OTRO
+347	4	OTRO
+348	5	OTRO
+349	6	OTRO
+350	7	OTRO
+351	8	OTRO
+352	9	OTRO
+353	10	OTRO
+354	11	OTRO
+355	12	OTRO
+356	13	OTRO
+357	14	OTRO
+358	15	OTRO
+359	16	OTRO
+360	17	OTRO
+361	18	OTRO
+362	20	OTRO
+363	21	OTRO
+364	23	OTRO
+365	24	OTRO
+366	25	OTRO
+367	19	OTRO
+368	22	OTRO
+104	9	TINAQUILLO
+\.
+
+
+--
+-- TOC entry 2156 (class 0 OID 0)
+-- Dependencies: 165
+-- Name: geo_municipio_geo_municipio_id_seq; Type: SEQUENCE SET; Schema: geo_ubicacion; Owner: postgres
+--
+
+SELECT pg_catalog.setval('geo_municipio_geo_municipio_id_seq', 370, true);
+
+
+--
+-- TOC entry 2100 (class 0 OID 36808)
+-- Dependencies: 168 2133
+-- Data for Name: geo_parroquia; Type: TABLE DATA; Schema: geo_ubicacion; Owner: postgres
+--
+
+COPY geo_parroquia (geo_parroquia_id, geo_municipio_id, nombre) FROM stdin;
+2333	127	ZEA
+1	165	23 DE ENERO
+8	66	ACEQUIAS
+9	84	ACURIGUA
+11	103	ADAURE
+13	103	ADICORA
+14	183	ADRIAN
+19	193	AGUA CALIENTE
+20	92	AGUA CLARA
+21	105	AGUA LARGA
+22	133	AGUA LINDA
+23	127	AGUA SALADA
+27	193	AGUA SANTA
+29	217	AGUA VIVA
+30	132	AGUEDO FELIPE ALVARADO
+31	178	AGUIRRE
+32	260	ALBARICO
+33	106	ALBERTO ADRIANI
+34	42	ALFREDO ARVELO LARRIVA
+35	20	ALMIRANTE LUIS BRION
+36	159	ALONSO DE OJEDA
+38	213	ALTA GUAJIRA
+43	165	ALTAGRACIA
+48	301	ALTAGRACIA
+49	308	ALTAGRACIA
+54	79	ALTAGRACIA
+58	194	ALTAGRACIA
+67	121	ALTAGRACIA DE LA MONTANA
+68	53	ALTAMIRA
+73	276	ALTAMIRA
+77	42	ALTO BARINAS
+78	187	ALTO DE LOS GODOS
+79	37	ALTO VENTUARI
+80	61	AMBROSIO
+81	71	AMENODORO RANGEL LAMUS
+85	194	ANA MARIA CAMPOS
+87	21	ANDRES BELLO
+88	156	ANDRES BELLO
+92	235	ANDRES ELOY BLANCO
+94	195	ANDRES ELOY BLANCO
+96	311	ANDRES LINARES
+97	165	ANTIMANO
+104	264	ANTOLIN TOVAR
+105	182	ANTONIO BORJAS ROMERO
+106	308	ANTONIO DIAZ
+108	140	ANTONIO JOSE DE SUCRE
+110	28	ANTONIO JOSE DE SUCRE
+111	271	ANTONIO NICOLAS BRICENO
+113	166	ANTONIO SPINETTI DINI
+119	201	ANZOATEGUI
+121	236	APARICIO
+122	210	APARICION
+123	2	APURITO
+124	52	ARACUA
+132	14	ARAGUANEY
+136	1	ARAGUITA
+139	215	ARAMENDI
+141	133	ARAURIMA
+142	90	ARAYA
+143	200	ARENAS
+145	80	AREO
+146	1	AREVALO GONZALEZ
+147	166	ARIAS
+154	200	ARICAGUA
+155	302	ARIPAO
+168	30	ARISMENDI
+169	61	ARISTIDES CALVANI
+170	67	ARNOLDO GABALDON
+171	151	ARNOLDO GABALDON
+172	79	ASCENSION FARRERAS
+175	108	ATAPIRIRE
+177	92	AVARIA
+181	40	AYACUCHO
+182	48	AYACUCHO
+189	301	AYACUCHO
+191	103	BARAIVED
+193	246	BARCELONETA
+194	136	BARI
+195	42	BARINAS
+202	53	BARINITAS
+204	59	BARIRO
+205	89	BARRANCAS
+206	177	BARTOLOME DE LAS CASAS
+207	43	BARUTA
+210	286	BERGANTIN
+211	243	BETIJOQUE
+212	325	BIDEAU
+222	295	BOBURES
+224	284	BOCA DE AROA
+225	269	BOCA DE CHAVEZ
+226	115	BOCA DE GRITA
+227	196	BOCA DE TOCUYO
+230	108	BOCA DEL PAO
+231	48	BOCONO
+232	255	BOCONO
+233	201	BOLIVAR
+235	182	BOLIVAR
+239	118	BOLIVAR
+240	46	BOLIVAR
+241	56	BOLIVAR
+243	334	BOLIVAR
+248	67	BOLIVIA
+249	187	BOQUERON
+250	59	BOROJO
+251	154	BRAMON
+252	324	BRUZUAL
+253	103	BUENA VISTA
+254	199	BUENA VISTA
+256	132	BUENA VISTA
+257	48	BURBUSAY
+258	288	BURIA
+261	322	CABIMBU
+263	161	CABRUTA
+264	217	CABUDARE
+265	234	CABURE
+266	75	CACHAMAY
+267	242	CACHIPO
+268	25	CACHIPO
+269	182	CACIQUE MARA
+270	245	CACUTE
+271	286	CAIGUA
+277	53	CALDERAS
+282	308	CAMACARO
+283	271	CAMPO ALEGRE
+285	184	CAMPO CLARO
+287	58	CAMPO ELIAS
+289	151	CAMPO ELIAS
+294	167	CAMPO ELIAS
+295	159	CAMPO LARA
+296	186	CANA DE AZUCAR
+303	165	CANDELARIA
+304	315	CANELONES
+305	223	CANO DELGADITO
+306	335	CANO EL TIGRE
+307	148	CANTAGALLO
+308	4	CAPADARE
+310	59	CAPATARIDA
+311	1	CAPAYA
+312	3	CAPITAL ACOSTA
+314	5	CAPITAL AGUA BLANCA
+315	6	CAPITAL AGUASAY
+316	146	CAPITAL ALTAGRACIA DE ORITUCO
+317	33	CAPITAL ALTO ORINOCO
+318	10	CAPITAL ANACO
+320	11	CAPITAL ANDRES BELLO
+322	12	CAPITAL ANDRES BELLO
+323	19	CAPITAL ANTOLIN DEL CAMPO
+324	22	CAPITAL ANTONIO PINTO SALINAS
+325	23	CAPITAL ANTONIO ROMULO COSTA
+326	25	CAPITAL ARAGUA
+327	26	CAPITAL ARAURE
+328	27	CAPITAL ARICAGUA
+330	29	CAPITAL ARISMENDI
+332	31	CAPITAL ARISTIDES BASTIDAS
+333	32	CAPITAL ARZOBISPO CHACON
+334	269	CAPITAL BOCA DE UCHIRE
+335	51	CAPITAL BOLIVAR
+337	49	CAPITAL BOLIVAR
+340	50	CAPITAL BOLIVAR
+341	55	CAPITAL BOLIVAR
+343	58	CAPITAL BRUZUAL
+344	62	CAPITAL CACIQUE MANAURE
+346	109	CAPITAL CALABOZO
+348	64	CAPITAL CAMAGUAN
+349	65	CAPITAL CAMATAGUA
+350	68	CAPITAL CARACCIOLO PARRA OLMEDO
+351	70	CAPITAL CARDENAL QUINTERO
+352	72	CAPITAL CARIPE
+353	80	CAPITAL CEDENO
+355	179	CAPITAL CLARINES
+356	83	CAPITAL COCOROTE
+357	86	CAPITAL CORDOBA
+358	91	CAPITAL DABAJURO
+359	93	CAPITAL DIAZ
+360	96	CAPITAL EL CALLAO
+361	152	CAPITAL EL SOMBRERO
+362	100	CAPITAL ESTELLER
+363	101	CAPITAL EZEQUIEL ZAMORA
+365	107	CAPITAL FERNANDO DE PENALVER
+366	110	CAPITAL FRANCISCO DE MIRANDA
+367	108	CAPITAL FRANCISCO DE MIRANDA
+369	113	CAPITAL FRANCISCO LINARES ALCANTARA
+370	114	CAPITAL GARCIA
+371	115	CAPITAL GARCIA DE HEVIA
+372	118	CAPITAL GOMEZ
+373	122	CAPITAL GUANARE
+374	123	CAPITAL GUANARITO
+375	125	CAPITAL GUARAQUE
+376	126	CAPITAL GUASIMOS
+378	131	CAPITAL INDEPENDENCIA
+380	130	CAPITAL INDEPENDENCIA
+381	138	CAPITAL JOSE ANGEL LAMAS
+382	139	CAPITAL JOSE ANTONIO PAEZ
+383	142	CAPITAL JOSE FELIX RIBAS
+385	143	CAPITAL JOSE GREGORIO MONAGAS
+386	144	CAPITAL JOSE MARIA VARGAS
+387	145	CAPITAL JOSE RAFAEL REVENGA
+388	153	CAPITAL JULIO CESAR SALAS
+389	155	CAPITAL JUSTO BRICENO
+390	158	CAPITAL LA TRINIDAD
+391	161	CAPITAL LAS MERCEDES
+392	164	CAPITAL LIBERTAD
+396	170	CAPITAL LIBERTADOR
+400	169	CAPITAL LIBERTADOR
+401	178	CAPITAL MANEIRO
+402	180	CAPITAL MANUEL MONGE
+403	183	CAPITAL MARCANO
+404	185	CAPITAL MARINO
+2694	365	OTRA
+407	187	CAPITAL MATURIN
+408	189	CAPITAL MEJIA
+409	190	CAPITAL MICHELENA
+413	195	CAPITAL MIRANDA
+415	197	CAPITAL MONSENOR JOSE VICENTE DE UNDA
+416	205	CAPITAL NIRGUA
+417	206	CAPITAL OBISPO RAMOS DE LORA
+418	208	CAPITAL OCUMARE DE LA COSTA DE ORO
+419	150	CAPITAL ONOTO
+420	209	CAPITAL ORTIZ
+421	210	CAPITAL OSPINO
+422	211	CAPITAL PADRE NOGUERA
+423	212	CAPITAL PADRE PEDRO CHIEN
+425	214	CAPITAL PAEZ
+428	218	CAPITAL PALMASOLA
+429	223	CAPITAL PAPELON
+430	229	CAPITAL PEDRO MARIA FREITES
+431	232	CAPITAL PENA
+432	233	CAPITAL PENINSULA DE MACANAO
+434	236	CAPITAL PIAR
+436	238	CAPITAL PIRITU
+437	240	CAPITAL PUEBLO LLANO
+438	147	CAPITAL PUERTO LA CRUZ
+439	242	CAPITAL PUNCERES
+440	244	CAPITAL RAFAEL URDANETA
+441	245	CAPITAL RANGEL
+442	39	CAPITAL RIO NEGRO
+443	249	CAPITAL RIVAS DAVILA
+444	257	CAPITAL SAN CASIMIRO
+445	260	CAPITAL SAN FELIPE
+446	262	CAPITAL SAN FRANCISCO
+448	264	CAPITAL SAN GENARO DE BOCONOITO
+449	265	CAPITAL SAN GERONIMO DE GUAYABAL
+450	267	CAPITAL SAN JOSE DE GUANIPA
+451	148	CAPITAL SAN JUAN DE LOS MORROS
+452	270	CAPITAL SAN JUDAS TADEO
+453	272	CAPITAL SAN RAFAEL DE ONOTO
+454	273	CAPITAL SAN SEBASTIAN
+455	274	CAPITAL SANTA ANA
+456	275	CAPITAL SANTA BARBARA
+457	276	CAPITAL SANTA MARIA DE IPIRE
+458	278	CAPITAL SANTA ROSALIA
+459	279	CAPITAL SANTIAGO MARINO
+460	280	CAPITAL SANTOS MARQUINA
+461	281	CAPITAL SANTOS MICHELENA
+462	282	CAPITAL SEBORUCO
+463	290	CAPITAL SIMON RODRIGUEZ
+465	293	CAPITAL SOTILLO
+470	297	CAPITAL SUCRE
+473	300	CAPITAL SUCRE
+475	303	CAPITAL SUCRE
+477	306	CAPITAL TOCOPERO
+478	307	CAPITAL TORBES
+480	310	CAPITAL TOVAR
+481	312	CAPITAL TUBORES
+483	141	CAPITAL TUCUPIDO
+484	314	CAPITAL TULIO FEBRES CORDERO
+485	315	CAPITAL TUREN
+486	317	CAPITAL URACHICHE
+487	318	CAPITAL URACOA
+489	319	CAPITAL URDANETA
+492	323	CAPITAL URIBANTE
+493	162	CAPITAL VALLE DE LA PASCUA
+494	330	CAPITAL VEROES
+495	331	CAPITAL VILLALBA
+496	333	CAPITAL ZAMORA
+499	231	CAPITAL ZARAZA
+500	335	CAPITAL ZEA
+501	32	CAPURI
+502	329	CARABALLEDA
+503	182	CARACCIOLO PARRA PEREZ
+504	166	CARACCIOLO PARRA PEREZ
+511	69	CARACHE
+512	329	CARAYACA
+513	71	CARDENAS
+514	323	CARDENAS
+521	165	CARICUAO
+522	73	CARIRUBANA
+523	112	CARLOS QUEVEDO
+524	329	CARLOS SOUBLETTE
+525	61	CARMEN HERRERA
+526	67	CARRILLO
+527	76	CARRIZAL
+528	329	CARUAO
+529	271	CARVAJAL
+530	188	CASIGUA
+531	308	CASTANEDA
+533	142	CASTOR NIEVES RIOS
+536	127	CATEDRAL
+538	132	CATEDRAL
+541	165	CATEDRAL
+543	329	CATIA LA MAR
+544	247	CATUARO
+545	1	CAUCAGUA
+554	304	CAUCAGUITA
+557	265	CAZORLA
+558	121	CECILIO ACOSTA
+559	182	CECILIO ACOSTA
+560	308	CECILIO ZUBILLAGA
+561	67	CEGARRA
+562	32	CHACANTA
+563	81	CHACAO
+564	90	CHACOPATA
+565	236	CHAGUARAMAL
+570	82	CHAGUARAMAS
+571	169	CHAGUARAMAS
+575	88	CHARALLAVE
+576	67	CHEJENDE
+582	54	CHEREGUE
+585	196	CHICHIRIVICHE
+590	300	CHIGUARA
+597	308	CHIQUINQUIRA
+598	311	CHIQUINQUIRA
+599	182	CHIQUINQUIRA
+600	156	CHIQUINQUIRA
+601	75	CHIRICA
+602	124	CHORRERON
+603	105	CHURUGUARA
+604	77	CINCO DE JULIO
+606	163	CIPRIANO CASTRO
+607	226	CIUDAD BOLIVIA
+608	292	CIUDAD DE NUTRIAS
+614	165	COCHE
+616	200	COCOLLAR
+617	227	CODAZZI
+618	24	COJEDES
+619	234	COLINA
+627	297	CONCEPCION
+630	156	CONCEPCION
+631	132	CONCEPCION
+633	173	CONSTITUCION
+634	182	COQUIVACOA
+635	42	CORAZON DE JESUS
+636	122	CORDOBA
+637	137	CORONEL MARIANO PERAZA
+638	182	CRISTO DE ARANZA
+639	325	CRISTOBAL COLON
+640	311	CRISTOBAL MENDOZA
+641	311	CRUZ CARRILLO
+645	321	CUA
+646	137	CUARA
+647	69	CUICAS
+648	200	CUMANACOA
+649	13	CUMBO
+653	227	CUNAVICHE
+654	228	CUPIRA
+655	20	CURIAPO
+656	57	CURIEPE
+657	234	CURIMAGUA
+658	283	DALLA COSTA
+659	75	DALLA COSTA
+660	137	DIEGO DE LOZADA
+661	123	DIVINA PASTORA
+662	250	DOLORES
+663	42	DOMINGA ORTIZ DE PAEZ
+664	166	DOMINGO PENA
+672	263	DOMITILA FLORES
+673	253	DONALDO GARCIA
+674	171	DORADAS
+681	258	DR. FRANCISCO ROMERO LOBO
+682	215	EL AMPARO
+683	248	EL AMPARO
+684	309	EL AMPARO
+689	263	EL BAJO
+691	202	EL BANO
+696	295	EL BATEY
+704	117	EL BAUL
+705	308	EL BLANCO
+706	1	EL CAFE
+707	43	EL CAFETAL
+710	109	EL CALVARIO
+711	16	EL CANTON
+715	164	EL CARITO
+716	156	EL CARMELO
+717	286	EL CARMEN
+718	48	EL CARMEN
+719	42	EL CARMEN
+725	128	EL CARTANAL
+730	193	EL CENIZO
+731	291	EL CHAPARRO
+732	316	EL CHARAL
+733	187	EL COROZO
+734	132	EL CUJI
+738	193	EL DIVIDIVE
+740	187	EL FURRIAL
+741	72	EL GUACHARO
+742	216	EL GUAPO
+746	330	EL GUAYABO
+747	97	EL HATILLO
+749	103	EL HATO
+753	14	EL JAGUITO
+754	121	EL JARILLO
+755	329	EL JUNKO
+761	165	EL JUNQUITO
+763	166	EL LLANO
+766	309	EL LLANO
+772	277	EL MENE
+773	32	EL MOLINO
+778	166	EL MORRO
+779	94	EL MORRO
+783	28	EL MORRO DE PUERTO SANTO
+785	108	EL PAO
+787	222	EL PAO
+802	165	EL PARAISO
+806	299	EL PARAISO
+807	105	EL PAUJI
+808	63	EL PAUJIL
+810	286	EL PILAR
+812	45	EL PILAR
+813	236	EL PINTO
+815	157	EL PROGRESO
+816	109	EL RASTRO
+819	207	EL REAL
+824	165	EL RECREO
+827	261	EL RECREO
+828	292	EL REGALO
+829	45	EL RINCON
+830	253	EL ROSARIO
+831	89	EL SOCORRO
+832	98	EL SOCORRO
+833	140	EL SOCORRO
+835	101	EL TEJERO
+840	165	EL VALLE
+844	103	EL VINCULO
+845	2	EL YAGUAL
+848	159	ELEAZAR LOPEZ CONTRERAS
+852	294	ELEAZAR LOPEZ CONTRERAS
+858	213	ELIAS SANCHEZ RUBIO
+862	206	ELOY PAREDES
+864	171	EMETERIO OCHOA
+870	134	EMILIO CONSTANTINO GUERRERO
+871	78	ENCONTRADOS
+872	99	ESCUQUE
+873	162	ESPINO
+874	308	ESPINOZA DE LOS MONTEROS
+880	300	ESTANQUEZ
+889	194	FARIA
+891	106	FERNANDEZ FEO
+892	66	FERNANDEZ PENA
+898	304	FILA DE MARICHES
+904	219	FLOR DE PATRIA
+905	68	FLORENCIO RAMIREZ
+906	278	FLORIDA
+907	182	FRANCISCO EUGENIO BUSTAMANTE
+908	114	FRANCISCO FAJARDO
+909	112	FRANCISCO JAVIER PULGAR
+911	263	FRANCISCO OCHOA
+912	87	FREITEZ
+913	7	GABRIEL PICON GONZOLEZ
+914	305	GENERAL EN JEFE JOSE LAURENCIO SILVA
+915	45	GENERAL FRANCISCO ANTONIO VASQUEZ
+916	48	GENERAL RIVAS
+917	41	GENERAL URDANETA
+918	61	GERMAN RIOS LINARES
+919	249	GERONIMO MALDONADO
+920	295	GIBRALTAR
+937	166	GONZALO PICON FEBRES
+945	54	GRANADOS
+946	2	GUACHARA
+947	30	GUADARRAMA
+950	84	GUAIBACOA
+951	32	GUAIMARAL
+955	213	GUAJIRA
+956	59	GUAJIRO
+957	236	GUANAGUANA
+959	179	GUANAPE
+960	79	GUANIAMO
+962	124	GUANTA
+963	48	GUARAMACAL
+972	302	GUARATARO
+975	45	GUARAUNOS
+976	109	GUARDATINAJAS
+979	239	GUARENAS
+980	201	GUARICO
+981	334	GUATIRE
+984	118	GUEVARA
+985	288	GUSTAVO VEGAS LEON
+987	191	GUZMAN GUILLERMO
+991	325	GUIRIA
+992	7	HECTOR AMABLE MORA
+1001	295	HERAS
+1004	255	HERNANDEZ
+1005	57	HIGUEROTE
+1006	201	HILARIO LUNA Y LUNA
+1007	201	HUMOCARO ALTO
+1008	201	HUMOCARO BAJO
+1009	182	IDELFONSO VASQUEZ
+1010	226	IGNACIO BRICENO
+1011	119	IKABARU
+1012	77	IMATACA
+1013	129	INDEPENDENCIA
+1014	314	INDEPENDENCIA
+1017	105	INDEPENDENCIA
+1019	184	IRAPA
+1025	56	ISAIAS MEDINA ANGARITA
+1029	9	ISLA DE TOAS
+1036	166	JACINTO PLAZA
+1037	133	JACURA
+1038	103	JADACAQUIVA
+1040	66	JAJI
+1042	322	JAJO
+1045	202	JALISCO
+1046	134	JAUREGUI
+1047	136	JESUS MARIA SEMPRUN
+1048	61	JORGE HERNANDEZ
+1049	127	JOSE ANTONIO PAEZ
+1050	115	JOSE ANTONIO PAEZ
+1051	137	JOSE BERNARDO DORANTE
+1052	277	JOSE CENOVIO URRIBARRI
+1053	226	JOSE FELIX RIBAS
+1054	217	JOSE GREGORIO BASTIDAS
+1055	243	JOSE GREGORIO HERNANDEZ
+1057	102	JOSE IGNACIO DEL PUMAR
+1058	271	JOSE LEONARDO SUAREZ
+1059	87	JOSE MARIA BLANCO
+1060	7	JOSE NUCETE SARDI
+1061	135	JOSE RAMON YEPES
+1062	313	JOSE VIDAL MARCANO
+1063	256	JUAN ANGEL BRAVO
+2695	343	OTRA
+1065	77	JUAN BAUTISTA ARISMENDI
+1066	137	JUAN BAUTISTA RODRIGUEZ
+1067	24	JUAN DE MATA SUAREZ
+1068	132	JUAN DE VILLEGAS
+1072	129	JUAN GERMAN ROSCIO
+1073	327	JUAN IGNACIO MONTILLA
+1074	313	JUAN MILLAN
+1075	323	JUAN PABLO PENALOZA
+1081	166	JUAN RODRIGUEZ SUAREZ
+1084	56	JUAN VICENTE GOMEZ
+1091	182	JUANA DE AVILA
+1092	132	JUAREZ
+1093	176	JUDIBANA
+1099	154	JUNIN
+1101	299	JUNIN
+1106	187	JUSEPIN
+1107	172	LA AGUADITA
+1108	327	LA BEATRIZ
+1109	201	LA CANDELARIA
+1110	157	LA CEIBA
+1111	332	LA CIENAGA
+2662	139	OTRA
+1114	69	LA CONCEPCION
+1115	135	LA CONCEPCION
+1116	220	LA CONCEPCION
+1117	258	LA CONCORDIA
+1118	160	LA DEMOCRACIA
+1119	304	LA DOLORITA
+1132	14	LA ESPERANZA
+1134	210	LA ESTACION
+1135	71	LA FLORIDA
+1136	329	LA GUAIRA
+1137	72	LA GUANOTA
+1138	207	LA LUZ
+1139	322	LA MESA
+1141	66	LA MESA
+1144	221	LA PALMITA
+1147	4	LA PASTORA
+1150	165	LA PASTORA
+1154	219	LA PAZ
+1159	52	LA PENA
+1163	154	LA PETROLEA
+1164	187	LA PICA
+1165	243	LA PUEBLITA
+1166	327	LA PUERTA
+1170	322	LA QUEBRADA
+1171	61	LA ROSA
+1172	127	LA SABANITA
+1173	181	LA SIERRITA
+1175	332	LA SOLEDAD
+1177	245	LA TOMA
+1179	236	LA TOSCANA
+1182	300	LA TRAMPA
+1192	251	LA TRINIDAD
+1194	30	LA UNION
+1196	99	LA UNION
+1198	79	LA URBANA
+1202	165	LA VEGA
+1206	84	LA VELA DE CORO
+1211	195	LA VENTA
+1212	328	LA VICTORIA
+1213	308	LARA
+1216	169	LAS ALHUACAS
+1221	88	LAS BRISAS
+1222	84	LAS CALDERAS
+1223	187	LAS COCUIZAS
+1227	302	LAS MAJADAS
+1235	308	LAS MERCEDES
+1236	43	LAS MINAS DE BARUTA
+1237	181	LAS PARCELAS
+1238	70	LAS PIEDRAS
+1239	316	LAS VEGAS DEL TUY
+1245	166	LASSO DE LA VEGA
+1247	94	LECHERIAS
+1248	313	LEONARDO RUIZ PINEDA
+1256	304	LEONCIO MARTINEZ
+1260	146	LEZAMA
+1261	177	LIBERTAD
+1262	163	LIBERTAD
+1263	250	LIBERTAD
+1264	159	LIBERTAD
+1265	63	LIBERTAD
+1267	248	LIBERTAD DE COJEDES
+1268	146	LIBERTAD DE ORITUCO
+1269	4	LIBERTADOR
+1271	171	LIBERTADOR
+1275	41	LIBERTADOR
+1279	229	LIBERTADOR
+1280	173	LOBATERA
+1281	312	LOS BARALES
+1282	293	LOS BARRANCOS DE FAJARDO
+1283	140	LOS CAPRICHOS
+1284	243	LOS CEDROS
+1286	263	LOS CORTIJOS
+1287	207	LOS GUASIMITOS
+1291	166	LOS NEVADOS
+1295	176	LOS TAQUES
+1296	121	LOS TEQUES
+1297	225	LUIS BELTRAN PRIETO FIGUEROA
+1298	181	LUIS DE VICENTE
+1299	182	LUIS HURTADO HIGUERA
+1300	172	MACAPO
+1304	165	MACARAO
+1308	46	MACARAPANA
+1309	228	MACHURUCUTO
+1310	84	MACORUCA
+1311	329	MACUTO
+1312	329	MAIQUETIA
+1313	131	MAMO
+1317	60	MAMPORAL
+1318	90	MANICUARE
+1319	203	MANTECAL
+1320	182	MANUEL DAGNINO
+1322	163	MANUEL FELIPE RUGELES
+1323	41	MANUEL GUANIPA MATOS
+1324	287	MANUEL MANRIQUE
+1326	256	MANUEL MANRIQUE
+1328	308	MANUEL MORILLO
+1329	42	MANUEL PALACIO FAJARDO
+1330	77	MANUEL PIAR
+1331	67	MANUEL SALVADOR ULLOA
+1332	105	MAPARARI
+1334	184	MARABAL
+1335	41	MARCELINO BRICENO
+1337	263	MARCIAL HERNANDEZ
+1338	127	MARHUANTA
+1339	314	MARIA DE LA CONCEPCION PALACIOS BLANCO
+1340	135	MARIANO PARRA LEON
+1346	166	MARIANO PICON SALAS
+1349	15	MARINO
+1351	313	MARISCAL ANTONIO JOSE DE SUCRE
+1352	1	MARIZAPA
+1353	89	MASPARRITO
+1354	118	MATASIETE
+1355	311	MATRIZ
+1356	66	MATRIZ
+1357	327	MENDOZA
+1358	188	MENE DE MAUROA
+1359	327	MERCEDES DIAZ
+1360	22	MESA BOLIVAR
+1361	22	MESA DE LAS PALMAS
+1362	125	MESA DE QUINTERO
+1367	166	MILLA
+1372	191	MITARE
+1385	302	MOITACO
+1386	9	MONAGAS
+1387	313	MONSENOR ARGIMIRO GARCIA
+1392	295	MONSENOR ARTURO CELESTINO ALVAREZ
+1399	311	MONSENOR CARRILLO
+1400	48	MONSENOR JAUREGUI
+1401	181	MONSENOR MARCOS SERGIO GODOY
+1402	134	MONSENOR MIGUEL ANTONIO SALAS
+1403	66	MONTALBAN
+1404	308	MONTANA VERDE
+1405	199	MONTE CARMELO
+1406	308	MONTES DE OCA
+1407	85	MORALITO
+1408	201	MORAN
+1412	320	MOROTURO
+1413	103	MORUY
+1415	48	MOSQUEY
+1416	202	MOTATAN
+1417	32	MUCUCHACHI
+2663	158	OTRA
+1418	2	MUCURITAS
+1419	245	MUCURUBA
+1420	32	MUCUTUY
+1421	329	NAIGUATA
+1424	286	NARICUAL
+1425	21	NICOLAS PULIDO
+1426	279	NO URBANA ALFREDO PACHECO MIRANDA
+1427	279	NO URBANA AREVALO APONTE
+1429	333	NO URBANA AUGUSTO MIJARES
+1431	74	NO URBANA BELEN
+1438	296	NO URBANA BELLA VISTA
+1443	241	NO URBANA BORBURATA
+1444	44	NO URBANA CANOABO
+1445	65	NO URBANA CARMEN DE CURA
+1446	116	NO URBANA CHORONI
+1448	279	NO URBANA CHUAO
+1449	113	NO URBANA FRANCISCO DE MIRANDA
+1450	257	NO URBANA GUIRIPA
+1452	142	NO URBANA LAS GUACAMAYAS
+1456	319	NO URBANA LAS PENITAS
+1459	333	NO URBANA MAGDALENO
+2696	366	OTRA
+1461	326	NO URBANA NEGRO PRIMERO
+1462	257	NO URBANA OLLAS DE CARAMACATE
+1464	142	NO URBANA PAO DE ZARATE
+1465	241	NO URBANA PATANEMO
+1466	279	NO URBANA SAMAN DE GUERE
+1469	333	NO URBANA SAN FRANCISCO DE AS
+1472	319	NO URBANA SAN FRANCISCO DE CARA
+1476	170	NO URBANA SAN MARTIN DE PORRES
+1481	44	NO URBANA SIMON BOLIVAR
+1482	74	NO URBANA TACARIGUA
+1484	319	NO URBANA TAGUAY
+1487	281	NO URBANA TIARA
+1488	149	NO URBANA URAMA
+1489	257	NO URBANA VALLE MOR
+1490	333	NO URBANA VALLES DE TUCUTUNEMO
+1493	120	NO URBANA YAGUA
+1495	142	NO URBANA ZUATA
+1496	73	NORTE
+1497	230	NUEVA ARCADIA
+1500	321	NUEVA CUA
+1502	207	OBISPOS
+1503	160	OCUMARE DEL TUY
+1504	182	OLEGARIO VILLALOBOS
+1505	75	ONCE DE ABRIL
+1506	127	ORINOCO
+1511	166	OSUNA RODRIGUEZ
+1514	226	PAEZ
+1515	250	PALACIOS FAJARDO
+1516	153	PALMIRA
+1523	56	PALOTAL
+1525	219	PAMPAN
+1526	220	PAMPANITO
+1527	220	PAMPANITO II
+1528	69	PANAMERICANA
+1529	221	PANAMERICANO
+1530	127	PANAPANA
+1531	1	PANAQUIRE
+1534	216	PAPARO
+1536	121	PARACOTOS
+1537	137	PARAISO DE SAN JOSE
+1538	148	PARAPARA
+1539	35	PARHUENA
+1541	289	PARROQUIA CAPITAL SIMON RODRIGUEZ
+1542	146	PASO REAL DE MACAIRA
+1546	214	PAYARA
+1550	298	PECAYA
+1558	225	PEDERNALES
+1559	92	PEDREGAL
+1561	102	PEDRO BRICENO MENDEZ
+1562	235	PEDRO COVA
+1564	277	PEDRO LUCAS URRIBARRI
+1565	258	PEDRO MARIA MORANTES
+1566	230	PEDRO MARIA URENA
+1567	197	PENA BLANCA
+1568	261	PENALVER
+1570	304	PETARE
+1580	143	PIAR
+1581	92	PIEDRA GRANDE
+1583	79	PIJIGUAOS
+1587	214	PIMPINELA
+1588	195	PINANGO
+1594	17	PIO TAMAYO
+1597	237	PIRITU
+1598	35	PLATANILLAL
+1599	323	POTOSI
+1600	156	POTRERITOS
+1601	75	POZO VERDE
+1602	147	POZUELOS
+1603	7	PRESIDENTE BETANCOURT
+1604	7	PRESIDENTE PAEZ
+1605	7	PRESIDENTE ROMULO GALLEGOS
+1608	332	PUEBLO CUMAREBO
+2697	142	OTRA
+1610	274	PUEBLO NUEVO
+1611	103	PUEBLO NUEVO
+1612	41	PUEBLO NUEVO
+1622	300	PUEBLO NUEVO DEL SUR
+1626	332	PUERTO CUMAREBO
+1627	292	PUERTO DE NUTRIAS
+1628	64	PUERTO MIRANDA
+1630	28	PUERTO SANTO
+1633	16	PUERTO VIVAS
+1635	7	PULIDO MENDEZ
+1636	73	PUNTA CARDON
+1637	325	PUNTA DE PIEDRAS
+1638	61	PUNTA GORDA
+1639	92	PURURECHE
+1642	17	QUEBRADA HONDA DE GUACHE
+1643	2	QUESERAS DEL MEDIO
+1644	154	QUINIMARI
+1645	203	QUINTERO
+1647	287	RAFAEL MARIA BARALT
+1649	48	RAFAEL RANGEL
+1652	328	RAFAEL URDANETA
+1653	287	RAFAEL URDANETA
+1654	102	RAMON IGNACIO MENDEZ
+2698	163	OTRA
+1658	214	RAMON PERAZA
+1661	328	RAUL CUENCA
+1670	182	RAUL LEONI
+1673	301	RAUL LEONI
+1675	247	RENDON
+1676	308	REYES VARGAS
+1677	1	RIBAS
+1678	181	RICAURTE
+1679	203	RINCON HONDO
+1680	26	RIO ACARIGUA
+1683	28	RIO CARIBE
+1686	216	RIO CHICO
+1688	125	RIO NEGRO
+1689	177	RIO NEGRO
+1692	191	RIO SECO
+1695	40	RIVAS BERTI
+1696	8	RODRIGUEZ DOMINGUEZ
+1699	129	ROMAN CARDENAS
+1701	42	ROMULO BETANCOURT
+1702	61	ROMULO BETANCOURT
+1706	252	ROMULO GALLEGOS
+1709	77	ROMULO GALLEGOS
+1711	15	ROMULO GALLEGOS
+1719	295	ROMULO GALLEGOS
+1723	299	SABANA DE MENDOZA
+1731	72	SABANA DE PIEDRA
+1732	179	SABANA DE UCHIRE
+1735	54	SABANA GRANDE
+1741	99	SABANA LIBRE
+1745	191	SABANETA
+1747	8	SABANETA
+1752	166	SAGRARIO
+1755	254	SALOME
+1756	205	SALOME
+1757	36	SAMARIAPO
+1758	255	SAMUEL DARIO MALDONADO
+1761	165	SAN AGUSTIN
+1764	72	SAN AGUSTIN
+1767	232	SAN ANDRES
+1768	194	SAN ANTONIO
+1772	30	SAN ANTONIO
+1774	27	SAN ANTONIO
+1776	191	SAN ANTONIO
+1778	184	SAN ANTONIO DE IRAPA
+1779	175	SAN ANTONIO DE LOS ALTOS
+1782	285	SAN ANTONIO DE YARE
+1783	61	SAN BENITO
+1786	165	SAN BERNARDINO
+1791	215	SAN CAMILO
+1795	256	SAN CARLOS DE AUSTRIA
+1796	85	SAN CARLOS DEL ZULIA
+1799	286	SAN CRISTOBAL
+1800	155	SAN CRISTOBAL DE TORONDOY
+1801	143	SAN DIEGO DE CABRUTICA
+1803	188	SAN FELIX
+1804	80	SAN FELIX
+1805	200	SAN FERNANDO
+1807	216	SAN FERNANDO DEL GUAPO
+1811	246	SAN FRANCISCO
+1812	233	SAN FRANCISCO
+1813	263	SAN FRANCISCO
+1814	309	SAN FRANCISCO
+1816	238	SAN FRANCISCO
+1819	3	SAN FRANCISCO
+1820	146	SAN FRANCISCO DE MACAIRA
+1821	209	SAN FRANCISCO DE TIZNADOS
+1823	285	SAN FRANCISCO DE YARE
+1825	191	SAN GABRIEL
+1830	283	SAN ISIDRO
+1831	182	SAN ISIDRO
+1832	315	SAN ISIDRO LABRADOR
+1833	260	SAN JAVIER
+1834	10	SAN JOAQUIN
+1835	171	SAN JOAQUIN DE NAVAY
+1846	165	SAN JOSE
+1849	135	SAN JOSE
+1852	48	SAN JOSE
+1853	313	SAN JOSE
+1854	67	SAN JOSE
+1857	194	SAN JOSE
+1858	18	SAN JOSE DE AEROCUAR
+1861	13	SAN JOSE DE BARLOVENTO
+1863	268	SAN JOSE DE GUARIBE
+1864	237	SAN JOSE DE LA COSTA
+1866	122	SAN JOSE DE LA MONTANA
+1867	177	SAN JOSE DE PERIJA
+1874	297	SAN JOSE DE SAGUAZ
+1879	209	SAN JOSE DE TIZNADOS
+1880	231	SAN JOSE DE UNARE
+1881	66	SAN JOSE DEL SUR
+1888	165	SAN JUAN
+1891	300	SAN JUAN
+1898	301	SAN JUAN
+1900	258	SAN JUAN BAUTISTA
+1901	122	SAN JUAN DE GUANAGUANARE
+1904	28	SAN JUAN DE LAS GALDONAS
+1906	4	SAN JUAN DE LOS CAYOS
+1907	200	SAN LORENZO
+1908	209	SAN LORENZO DE TIZNADOS
+1909	327	SAN LUIS
+1915	52	SAN LUIS
+1919	48	SAN MIGUEL
+1921	137	SAN MIGUEL
+1922	107	SAN MIGUEL
+1923	320	SAN MIGUEL
+1926	294	SAN PABLO
+1933	150	SAN PABLO
+1938	165	SAN PEDRO
+1939	121	SAN PEDRO
+1945	40	SAN PEDRO DEL RIO
+1946	313	SAN RAFAEL
+1947	245	SAN RAFAEL
+1948	181	SAN RAFAEL
+1949	206	SAN RAFAEL DE ALCAZAR
+1950	261	SAN RAFAEL DE ATAMAICA
+1952	141	SAN RAFAEL DE LAYA
+1953	146	SAN RAFAEL DE ORITUCO
+1957	297	SAN RAFAEL DE PALO ALZADO
+1965	258	SAN SEBASTIAN
+1966	42	SAN SILVESTRE
+1967	187	SAN SIMON
+1968	41	SAN TIMOTEO
+1969	203	SAN VICENTE
+1970	187	SAN VICENTE
+1971	219	SANTA ANA
+1972	191	SANTA ANA
+1975	73	SANTA ANA
+1978	157	SANTA APOLONIA
+1979	314	SANTA APOLONIA
+1980	160	SANTA BARBARA
+1982	246	SANTA BARBARA
+1983	111	SANTA BARBARA
+1984	85	SANTA BARBARA
+1985	102	SANTA BARBARA
+1986	292	SANTA CATALINA
+1987	46	SANTA CATALINA
+1988	143	SANTA CLARA
+1989	315	SANTA CRUZ
+1990	247	SANTA CRUZ
+1991	187	SANTA CRUZ
+1992	69	SANTA CRUZ
+1993	316	SANTA CRUZ DE BUCARAL
+1994	16	SANTA CRUZ DE GUACAS
+1997	85	SANTA CRUZ DEL ZULIA
+2002	301	SANTA FE
+2005	272	SANTA FE
+2015	42	SANTA INES
+2017	301	SANTA INES
+2020	164	SANTA INES
+2026	14	SANTA ISABEL
+2028	182	SANTA LUCIA
+2029	224	SANTA LUCIA
+2664	180	OTRA
+2030	42	SANTA LUCIA
+2031	247	SANTA MARIA
+2032	199	SANTA MARIA DEL HORCON
+2033	99	SANTA RITA
+2034	277	SANTA RITA
+2035	161	SANTA RITA DE MANAPIRE
+2036	132	SANTA ROSA
+2037	229	SANTA ROSA
+2038	250	SANTA ROSA
+2039	46	SANTA ROSA
+2048	165	SANTA TERESA
+2049	46	SANTA TERESA
+2056	128	SANTA TERESA DEL TUY
+2061	322	SANTIAGO
+2063	106	SANTO DOMINGO
+2064	20	SANTOS DE ABELGAS
+2065	288	SARARE
+2067	79	SECCION CAPITAL CEDENO
+2068	119	SECCION CAPITAL GRAN SABANA
+2070	235	SECCION CAPITAL PIAR
+2071	246	SECCION CAPITAL RAUL LEONI
+2072	254	SECCION CAPITAL ROSCIO
+2073	283	SECCION CAPITAL SIFONTES
+2079	302	SECCION CAPITAL SUCRE
+2085	59	SEQUE
+2086	75	SIMON BOLIVAR
+2087	112	SIMON RODRIGUEZ
+2091	213	SINAMAICA
+2092	320	SIQUISIQUE
+2096	253	SIXTO ZAMBRANO
+2097	184	SORO
+2099	152	SOSA
+2100	146	SOUBLETTE
+2101	294	SUCRE
+2102	165	SUCRE
+2109	117	SUCRE
+2114	298	SUCRE
+2115	118	SUCRE
+2119	107	SUCRE
+2125	169	TABASCA
+2130	57	TACARIGUA
+2134	216	TACARIGUA DE LA LAGUNA
+2135	121	TACATA
+2137	236	TAGUAYA
+2138	132	TAMACA
+2139	181	TAMARE
+2140	18	TAVERA ACOSTA
+2141	205	TEMERLA
+2142	72	TERESEN
+2143	272	THERMO MORLES
+2144	21	TICOPORO
+2146	104	TINAQUILLO
+2147	137	TINTORERO
+2148	196	TOCUYO DE LA COSTA
+2149	291	TOMAS ALFARO CALATRAVA
+2150	308	TORRES
+2151	42	TORUNOS
+2152	309	TOVAR
+2154	157	TRES DE FEBRERO
+2155	311	TRES ESQUINAS
+2156	123	TRINIDAD DE LA CAPILLA
+2157	308	TRINIDAD SAMUEL
+2158	284	TUCACAS
+2160	322	TUNAME
+2163	45	TUNAPUICITO
+2170	167	TUNAPUY
+2171	34	UCATA
+2172	78	UDON PEREZ
+2173	75	UNARE
+2174	132	UNION
+2175	45	UNION
+2176	75	UNIVERSIDAD
+2177	2	URBANA ACHAGUAS
+2178	95	URBANA AGUAS CALIENTES
+2179	116	URBANA ANDRES ELOY BLANCO
+2181	241	URBANA BARTOLOME SALOM
+2182	44	URBANA BEJUMA
+2183	47	URBANA BIRUACA
+2184	203	URBANA BRUZUAL
+2185	326	URBANA CANDELARIA
+2186	326	URBANA CATEDRAL
+2187	120	URBANA CIUDAD ALIANZA
+2188	241	URBANA DEMOCRACIA
+2189	326	URBANA EL SOCORRO
+2191	251	URBANA ELORZA
+2192	241	URBANA FRATERNIDAD
+2193	241	URBANA GOAIGOAZA
+2194	120	URBANA GUACARA
+2195	215	URBANA GUASDUALITO
+2199	74	URBANA GUIGUE
+2202	168	URBANA INDEPENDENCIA
+2207	116	URBANA JOAQUIN CRESPO
+2210	116	URBANA JOSE CASANOVA GODOY
+2211	241	URBANA JUAN JOSE FLORES
+2212	116	URBANA LAS DELICIAS
+2214	174	URBANA LOS GUAYOS
+2215	116	URBANA LOS TACARIGUAS
+2217	116	URBANA MADRE MARIA DE SAN JOSE
+2219	95	URBANA MARIARA
+2220	326	URBANA MIGUEL PENA
+2225	192	URBANA MIRANDA
+2226	198	URBANA MONTALBAN
+2227	149	URBANA MORAN
+2228	204	URBANA NAGUANAGUA
+2230	116	URBANA PEDRO JOSE OVALLES
+2231	326	URBANA RAFAEL URDANETA
+2232	326	URBANA SAN BLAS
+2233	259	URBANA SAN DIEGO
+2234	261	URBANA SAN FERNANDO
+2235	266	URBANA SAN JOAQUIN
+2236	326	URBANA SAN JOSE
+2237	227	URBANA SAN JUAN DE PAYARA
+2238	326	URBANA SANTA ROSA
+2242	168	URBANA TOCUYITO
+2246	241	URBANA UNION
+2249	215	URDANETA
+2251	229	URICA
+2252	85	URRIBARRI
+2253	324	URUMACO
+2264	297	UVENCIO ANTONIO VELASQUEZ
+2265	100	UVERAL
+2266	64	UVERITO
+2267	143	UVERITO
+2270	301	VALENTIN VALIENTE
+2279	193	VALERITA
+2284	111	VALLE DE GUANAPE
+2287	299	VALMORE RODRIGUEZ
+2296	48	VEGA DE GUARAMACAL
+2297	182	VENANCIO PULGAR
+2298	159	VENEZUELA
+2299	331	VICENTE FUENTES
+2300	38	VICTORINO
+2302	80	VIENTO FRESCO
+2303	247	VILLA FRONTADO (MUELLE DE CARIACO)
+2306	297	VILLA ROSA
+2315	122	VIRGEN DE LA COROMOTO
+2665	205	OTRA
+2316	313	VIRGEN DEL VALLE
+2317	75	VISTA AL SOL
+2318	127	VISTA HERMOSA
+2320	320	XAGUAS
+2323	17	YACAMBU
+2326	63	YAGUARAPARO
+2327	75	YOCOIMA
+2328	93	ZABALA
+2330	59	ZAZARIDA
+2332	332	ZAZARIDA
+2334	143	ZUATA
+2335	165	SANTA ROSALIA
+2336	343	CHIMANAS
+2337	343	GRAN ROQUE
+2338	343	LOS TESTIGOS
+2340	21	OTRA
+2341	165	OTRA
+2342	344	OTRA
+2343	30	OTRA
+2344	33	OTRA
+2345	42	OTRA
+2346	53	OTRA
+2347	34	OTRA
+2348	89	OTRA
+2349	35	OTRA
+2350	102	OTRA
+2351	36	OTRA
+2352	37	OTRA
+2353	207	OTRA
+2354	226	OTRA
+2355	38	OTRA
+2356	250	OTRA
+2357	39	OTRA
+2358	345	OTRA
+2359	292	OTRA
+2360	349	OTRA
+2361	10	OTRA
+2362	25	OTRA
+2363	75	OTRA
+2364	94	OTRA
+2365	79	OTRA
+2366	96	OTRA
+2367	107	OTRA
+2368	119	OTRA
+2369	108	OTRA
+2370	111	OTRA
+2371	127	OTRA
+2372	124	OTRA
+2373	212	OTRA
+2374	235	OTRA
+2375	131	OTRA
+2376	143	OTRA
+2377	246	OTRA
+2378	254	OTRA
+2379	147	OTRA
+2380	150	OTRA
+2381	283	OTRA
+2382	164	OTRA
+2383	302	OTRA
+2384	179	OTRA
+2385	350	OTRA
+2386	229	OTRA
+2387	44	OTRA
+2388	238	OTRA
+2389	74	OTRA
+2390	95	OTRA
+2391	267	OTRA
+2392	120	OTRA
+2393	269	OTRA
+2394	274	OTRA
+2395	149	OTRA
+2396	174	OTRA
+2397	286	OTRA
+2398	168	OTRA
+2399	192	OTRA
+2400	289	OTRA
+2401	198	OTRA
+2402	291	OTRA
+2403	204	OTRA
+2404	346	OTRA
+2405	2	OTRA
+2406	241	OTRA
+2407	47	OTRA
+2408	259	OTRA
+2409	203	OTRA
+2410	266	OTRA
+2411	326	OTRA
+2412	215	OTRA
+2413	351	OTRA
+2414	227	OTRA
+2415	24	OTRA
+2416	251	OTRA
+2417	104	OTRA
+2418	261	OTRA
+2419	117	OTRA
+2420	347	OTRA
+2421	172	OTRA
+2422	50	OTRA
+2423	65	OTRA
+2424	222	OTRA
+2425	248	OTRA
+2426	113	OTRA
+2427	116	OTRA
+2428	252	OTRA
+2429	138	OTRA
+2430	256	OTRA
+2431	145	OTRA
+2432	305	OTRA
+2433	352	OTRA
+2434	170	OTRA
+2435	20	OTRA
+2436	186	OTRA
+2437	208	OTRA
+2438	77	OTRA
+2439	257	OTRA
+2440	225	OTRA
+2441	313	OTRA
+2442	273	OTRA
+2443	353	OTRA
+2444	279	OTRA
+2445	281	OTRA
+2446	4	OTRA
+2447	52	OTRA
+2448	296	OTRA
+2449	310	OTRA
+2450	59	OTRA
+2451	62	OTRA
+2452	319	OTRA
+2453	73	OTRA
+2454	333	OTRA
+2455	348	OTRA
+2456	84	OTRA
+2457	91	OTRA
+2458	8	OTRA
+2459	16	OTRA
+2460	92	OTRA
+2461	103	OTRA
+2462	105	OTRA
+2463	133	OTRA
+2464	176	OTRA
+2465	188	OTRA
+2466	191	OTRA
+2467	196	OTRA
+2468	218	OTRA
+2469	234	OTRA
+2470	237	OTRA
+2471	262	OTRA
+2472	284	OTRA
+2473	298	OTRA
+2474	306	OTRA
+2475	316	OTRA
+2476	324	OTRA
+2477	332	OTRA
+2478	354	OTRA
+2479	64	OTRA
+2480	82	OTRA
+2481	98	OTRA
+2482	109	OTRA
+2483	141	OTRA
+2484	146	OTRA
+2485	148	OTRA
+2486	152	OTRA
+2487	161	OTRA
+2488	162	OTRA
+2489	209	OTRA
+2490	231	OTRA
+2491	265	OTRA
+2492	268	OTRA
+2493	276	OTRA
+2494	355	OTRA
+2495	17	OTRA
+2496	87	OTRA
+2497	132	OTRA
+2498	137	OTRA
+2499	201	OTRA
+2500	217	OTRA
+2501	288	OTRA
+2502	308	OTRA
+2503	320	OTRA
+2504	356	OTRA
+2505	7	OTRA
+2506	11	OTRA
+2507	314	OTRA
+2508	22	OTRA
+2509	27	OTRA
+2510	32	OTRA
+2511	66	OTRA
+2512	68	OTRA
+2513	70	OTRA
+2514	125	OTRA
+2515	153	OTRA
+2516	155	OTRA
+2517	166	OTRA
+2518	195	OTRA
+2519	206	OTRA
+2520	211	OTRA
+2521	240	OTRA
+2522	245	OTRA
+2523	280	OTRA
+2524	249	OTRA
+2525	300	OTRA
+2526	309	OTRA
+2527	335	OTRA
+2528	357	OTRA
+2529	1	OTRA
+2530	13	OTRA
+2531	43	OTRA
+2532	57	OTRA
+2533	60	OTRA
+2534	76	OTRA
+2535	81	OTRA
+2536	88	OTRA
+2537	97	OTRA
+2538	121	OTRA
+2539	128	OTRA
+2540	160	OTRA
+2541	175	OTRA
+2542	216	OTRA
+2543	224	OTRA
+2544	228	OTRA
+2545	239	OTRA
+2546	285	OTRA
+2547	304	OTRA
+2548	321	OTRA
+2549	334	OTRA
+2550	358	OTRA
+2551	3	OTRA
+2552	6	OTRA
+2553	49	OTRA
+2554	72	OTRA
+2555	80	OTRA
+2556	101	OTRA
+2557	169	OTRA
+2558	187	OTRA
+2559	236	OTRA
+2560	242	OTRA
+2561	275	OTRA
+2562	293	OTRA
+2563	318	OTRA
+2564	359	OTRA
+2565	19	OTRA
+2566	29	OTRA
+2567	93	OTRA
+2568	114	OTRA
+2569	118	OTRA
+2570	178	OTRA
+2571	183	OTRA
+2572	185	OTRA
+2573	233	OTRA
+2574	233	OTRA
+2575	331	OTRA
+2576	360	OTRA
+2577	5	OTRA
+2578	26	OTRA
+2579	100	OTRA
+2580	122	OTRA
+2581	123	OTRA
+2582	197	OTRA
+2583	210	OTRA
+2584	214	OTRA
+2585	223	OTRA
+2586	264	OTRA
+2587	272	OTRA
+2588	278	OTRA
+2589	297	OTRA
+2590	315	OTRA
+2591	361	OTRA
+2592	15	OTRA
+2593	18	OTRA
+2594	28	OTRA
+2595	45	OTRA
+2596	46	OTRA
+2597	51	OTRA
+2598	63	OTRA
+2599	90	OTRA
+2600	167	OTRA
+2601	184	OTRA
+2602	189	OTRA
+2603	200	OTRA
+2604	247	OTRA
+2605	301	OTRA
+2606	325	OTRA
+2607	12	OTRA
+2608	23	OTRA
+2609	40	OTRA
+2610	56	OTRA
+2611	71	OTRA
+2612	86	OTRA
+2613	106	OTRA
+2614	110	OTRA
+2615	115	OTRA
+2616	126	OTRA
+2617	129	OTRA
+2618	134	OTRA
+2619	144	OTRA
+2620	154	OTRA
+2621	171	OTRA
+2622	173	OTRA
+2623	190	OTRA
+2624	221	OTRA
+2625	230	OTRA
+2626	244	OTRA
+2627	255	OTRA
+2628	258	OTRA
+2629	270	OTRA
+2630	282	OTRA
+2631	290	OTRA
+2632	294	OTRA
+2633	307	OTRA
+2634	323	OTRA
+2635	362	OTRA
+2636	14	OTRA
+2637	48	OTRA
+2638	54	OTRA
+2639	67	OTRA
+2640	69	OTRA
+2641	99	OTRA
+2642	140	OTRA
+2643	151	OTRA
+2644	157	OTRA
+2645	193	OTRA
+2646	199	OTRA
+2647	202	OTRA
+2648	219	OTRA
+2649	220	OTRA
+2650	243	OTRA
+2651	271	OTRA
+2652	299	OTRA
+2653	311	OTRA
+2654	322	OTRA
+2655	327	OTRA
+2656	363	OTRA
+2657	31	OTRA
+2658	55	OTRA
+2659	58	OTRA
+2660	83	OTRA
+2661	130	OTRA
+2666	232	OTRA
+2667	260	OTRA
+2668	303	OTRA
+2669	317	OTRA
+2670	330	OTRA
+2671	9	OTRA
+2672	41	OTRA
+2673	61	OTRA
+2674	78	OTRA
+2675	85	OTRA
+2676	112	OTRA
+2677	135	OTRA
+2678	136	OTRA
+2679	156	OTRA
+2680	159	OTRA
+2681	177	OTRA
+2682	181	OTRA
+2683	182	OTRA
+2684	194	OTRA
+2685	213	OTRA
+2686	253	OTRA
+2687	263	OTRA
+2688	277	OTRA
+2689	287	OTRA
+2690	295	OTRA
+2691	328	OTRA
+2692	364	OTRA
+2693	329	OTRA
+2699	368	OTRA
+1655	42	RAMON IGNACIO MENDEZ
+1064	42	JUAN ANTONIO RODRIGUEZ DOMENGUEZ
+406	186	CAPITAL MARIO BRICEÑO IRAGORRY
+1460	113	NO URBANA MONSENOR FELICIANO GONZALEZ
+1665	329	URIMARE
+476	296	CAGUA
+\.
+
+
+--
+-- TOC entry 2157 (class 0 OID 0)
+-- Dependencies: 167
+-- Name: geo_parroquia_geo_parroquia_id_seq; Type: SEQUENCE SET; Schema: geo_ubicacion; Owner: postgres
+--
+
+SELECT pg_catalog.setval('geo_parroquia_geo_parroquia_id_seq', 2700, true);
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- TOC entry 2101 (class 0 OID 36815)
+-- Dependencies: 169 2133
+-- Data for Name: addendum; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY addendum (id_addendum, fecha_addendum, monto_addendum, id_estatus_addendum, st_addendum, id_contrato, id_punto_cuenta, nu_addendum) FROM stdin;
+1	2016-01-22	1000000.00	1	t	\N	1	\N
+2	2016-01-22	10000000000.00	1	t	1	1	\N
+3	2016-01-26	100000.00	1	t	1	\N	2
+4	2016-01-26	10000000.00	1	t	1	\N	3
+5	2016-01-25	1000.00	1	f	5	\N	1
+\.
+
+
+--
+-- TOC entry 2158 (class 0 OID 0)
+-- Dependencies: 170
+-- Name: addendum_id_addendum_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('addendum_id_addendum_seq', 5, true);
+
+
+--
+-- TOC entry 2103 (class 0 OID 36823)
+-- Dependencies: 171 2133
+-- Data for Name: contrato; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY contrato (id_contrato, id_punto_cuenta, co_contrato, nb_obra, objeto, id_estado, id_municipio, id_parroquia, id_tp_contrato, id_institucion, fecha_suscripcion, fecha_culminacion, monto_total, avance_financiero, avance_fisico, observaciones, id_estatus, nb_constructor, telf_constructor, correo_constructor, nb_inspector, telf_inspector, correo_inspector, st_contrato) FROM stdin;
+3	2	INM-AMA-GT-164-2014		zdcfazfsdfadsf	1	60	43	1	1	2016-01-07	2016-01-08	0.00	0.00	0.00		\N							f
+2	2	ax<zxzxz<xx	MAISANTA	<dsdsadasdasd	1	165	43	1	1	2016-01-01	2016-01-05	977.00	60.00	11.00	asdasdasdsa	\N							f
+1	1	INM-AMA-GT-164-2014	MAISANTA	asdasdasda	\N	\N	\N	1	1	2014-12-01	2015-12-01	9774545.45	60.00	11.00	asdasdsadadsasdasdadad	\N							t
+4	3	INM-AMA-GT-164-2016	xacadasd	acaasxsd	1	\N	\N	1	1	2016-01-01	2016-01-30	100000000.00	10.00	5.00	aefsfssfsd	\N							f
+5	3	INM-AMA-GT-165-2016	asdasdad	zadasdadasdadasd	1	\N	\N	1	1	2016-01-01	2016-01-23	100000.00	10.00	20.00	asd	\N							f
+\.
+
+
+--
+-- TOC entry 2159 (class 0 OID 0)
+-- Dependencies: 172
+-- Name: contrato_id_contrato_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('contrato_id_contrato_seq', 5, true);
+
+
+--
+-- TOC entry 2105 (class 0 OID 36832)
+-- Dependencies: 173 2133
+-- Data for Name: estatus_addendum; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY estatus_addendum (id_estatus_addendum, nb_estatus_addendum, st_estatus_addendum) FROM stdin;
+1	FIRMADO POR AMBAS PARTES	t
+\.
+
+
+--
+-- TOC entry 2160 (class 0 OID 0)
+-- Dependencies: 174
+-- Name: estatus_addendum_id_estatus_addendum_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('estatus_addendum_id_estatus_addendum_seq', 1, true);
+
+
+--
+-- TOC entry 2107 (class 0 OID 36841)
+-- Dependencies: 175 2133
+-- Data for Name: estatus_contrato; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY estatus_contrato (id_estatus_contrato, nb_estatus_contrato, st_estatus_contrato) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2161 (class 0 OID 0)
+-- Dependencies: 176
+-- Name: estatus_contrato_id_estatus_contrato_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('estatus_contrato_id_estatus_contrato_seq', 1, false);
+
+
+--
+-- TOC entry 2109 (class 0 OID 36849)
+-- Dependencies: 177 2133
+-- Data for Name: funcionario; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY funcionario (id_funcionario, nb_funcionario, cargo_funcionario, st_funcionario) FROM stdin;
+1	NICOLAS MADURO	PRESIDENTE DE LA REPUBLICA	t
+3	MANUEL QUEVEDO	MINISTRO	t
+\.
+
+
+--
+-- TOC entry 2162 (class 0 OID 0)
+-- Dependencies: 178
+-- Name: funcionario_id_funcionario_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('funcionario_id_funcionario_seq', 3, true);
+
+
+--
+-- TOC entry 2111 (class 0 OID 36858)
+-- Dependencies: 179 2133
+-- Data for Name: institucion; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY institucion (id_institucion, nb_institucion, st_institucion) FROM stdin;
+1	INMOBILIARIA	t
+\.
+
+
+--
+-- TOC entry 2163 (class 0 OID 0)
+-- Dependencies: 180
+-- Name: institucion_id_institucion_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('institucion_id_institucion_seq', 1, true);
+
+
+--
+-- TOC entry 2113 (class 0 OID 36866)
+-- Dependencies: 181 2133
+-- Data for Name: moneda; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY moneda (id_moneda, nb_moneda, simbolo, st_moneda) FROM stdin;
+1	BOLIVARES	Bs	t
+2	DOLARES	$	t
+3	EUROS	\N	t
+\.
+
+
+--
+-- TOC entry 2164 (class 0 OID 0)
+-- Dependencies: 182
+-- Name: moneda_id_moneda_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('moneda_id_moneda_seq', 3, true);
+
+
+--
+-- TOC entry 2115 (class 0 OID 36871)
+-- Dependencies: 183 2133
+-- Data for Name: persona; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY persona (nacionalidad, id_persona, cedula, nombre1, nombre2, apellido1, apellido2, telefono, fe_nacimiento, correo, usuario_id_aud) FROM stdin;
+V	1	7438517	LISBETH		ROMERO		04127392591	\N	lmromero@minvih.gob.ve	1
+\.
+
+
+--
+-- TOC entry 2165 (class 0 OID 0)
+-- Dependencies: 184
+-- Name: persona_id_persona_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('persona_id_persona_seq', 1, true);
+
+
+--
+-- TOC entry 2117 (class 0 OID 36879)
+-- Dependencies: 185 2133
+-- Data for Name: punto_cuenta; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY punto_cuenta (id_punto_cuenta, id_punto_padre, presidencial, monto_bs, monto_disp_bs, monto_dv, monto_disp_dv, id_tp_moneda, id_tp_recurso, asunto, descripcion, presentado, id_funcionario, fecha_aprobacion, co_punto_cuenta, st_punto_cuenta, recomendaciones) FROM stdin;
+2	1	f	12312300.00	123300.00	123123100.00	2331300.00	2	1	adassdfsdfs	dfsdfsdfsd	sfsdfsdfsdfsdf	3	2015-12-15	VT-039-12	t	\N
+3	1	f	100000.00	\N	\N	\N	1	1	asdasd	asdasdasda	asdasdasd	3	2015-12-15	VT-036-13	f	\N
+1	\N	t	8844000.00	\N	10000.00	\N	2	1	SOLICITUD DE AUTORIZACIÓN PARA LA PUBLICACIÓN DE LA NUEVA PAGINA WEB DEL MINHVI.	Los Sitios Web se han convertido en uno de los más importantes medios publicitarios interactivos, proporcionando una mayor fuente de consulta y divulgación de información para la sociedad, \nlos cuales han sido utilizados para diferentes propósitos, incluyendo la promoción de logros de las Instituciones del Estado, tanto a nivel Nacional como Internacional.\nDado el tiempo que se tiene sin realizar una actualización del portal web actual del Ministerio,\nnace la necesidad de utilizar nuevas tendencias y mejoras informáticas, en el aspecto visual y técnico; la nueva propuesta está diseñada bajo una herramienta actualizada y amigable para los usuarios, tanto a los que administren el contenido del sitio como a todas aquellas personas que utilizan al Ministerio como fuente informativa de comunicación, a través de las notas de prensa publicadas por cada actividad llevada a cabo en el Ministerio, cifras de viviendas culminadas a la fecha, centralización de los sistemas informáticos del área de viviendas  y cualquier otra información de interés al público.\nLos Sitios Web se han convertido en uno de los más importantes medios publicitarios interactivos, proporcionando una mayor fuente de consulta y divulgación de información para la sociedad, \nlos cuales han sido utilizados para diferentes propósitos, incluyendo la promoción de logros de las Instituciones del Estado, tanto a nivel Nacional como Internacional.\nDado el tiempo que se tiene sin realizar una actualización del portal web actual del Ministerio,\nnace la necesidad de utilizar nuevas tendencias y mejoras informáticas, en el aspecto visual y técnico; la nueva propuesta está diseñada bajo una herramienta actualizada y amigable para los usuarios, tanto a los que administren el contenido del sitio como a todas aquellas personas que utilizan al Ministerio como fuente informativa de comunicación, a través de las notas de prensa publicadas por cada actividad llevada a cabo en el Ministerio, cifras de viviendas culminadas a la fecha, centralización de los sistemas informáticos del área de viviendas  y cualquier otra información de interés al público.\nLos Sitios Web se han convertido en uno de los más importantes medios publicitarios interactivos, proporcionando una mayor fuente de consulta y divulgación de información para la sociedad, \nlos cuales han sido utilizados para diferentes propósitos, incluyendo la promoción de logros de las Instituciones del Estado, tanto a nivel Nacional como Internacional.\nDado el tiempo que se tiene sin realizar una actualización del portal web actual del Ministerio,\nnace la necesidad de utilizar nuevas tendencias y mejoras informáticas, en el aspecto visual y técnico; la nueva propuesta está diseñada bajo una herramienta actualizada y amigable para los usuarios, tanto a los que administren el contenido del sitio como a todas aquellas personas que utilizan al Ministerio como fuente informativa de comunicación, a través de las notas de prensa publicadas por cada actividad llevada a cabo en el Ministerio, cifras de viviendas culminadas a la fecha, centralización de los sistemas informáticos del área de viviendas  y cualquier otra información de interés al público.\n	asdasds	1	2015-12-14	VT-036-12	t	Se recomienda muy respetuosamente al ciudadano Ministro, Manuel Quevedo Fernández, autorizar el lanzamiento de la nueva página web del MINHVI
+\.
+
+
+--
+-- TOC entry 2166 (class 0 OID 0)
+-- Dependencies: 186
+-- Name: punto_cuenta_id_punto_cuenta_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('punto_cuenta_id_punto_cuenta_seq', 3, true);
+
+
+--
+-- TOC entry 2119 (class 0 OID 36889)
+-- Dependencies: 187 2133
+-- Data for Name: session; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY session (id, expire, data) FROM stdin;
+8n31bbjglhb4vlhf9g0lmr8590      	1454079277	\\x63303037336235366332393939626336613030333838613336316532346335335f5f69647c693a313b63303037336235366332393939626336613030333838613336316532346335335f5f6e616d657c733a353a2261646d696e223b63303037336235366332393939626336613030333838613336316532346335335f5f7374617465737c613a303a7b7d63303037336235366332393939626336613030333838613336316532346335335969692e43576562557365722e666c617368636f756e746572737c613a303a7b7d
+\.
+
+
+--
+-- TOC entry 2120 (class 0 OID 36895)
+-- Dependencies: 188 2133
+-- Data for Name: tipo_contrato; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY tipo_contrato (id_tp_contrato, nb_tp_contrato, st_tp_contrato) FROM stdin;
+1	GERENCIA TÉCNICA	t
+\.
+
+
+--
+-- TOC entry 2167 (class 0 OID 0)
+-- Dependencies: 189
+-- Name: tipo_contrato_id_tp_contrato_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tipo_contrato_id_tp_contrato_seq', 1, true);
+
+
+--
+-- TOC entry 2122 (class 0 OID 36903)
+-- Dependencies: 190 2133
+-- Data for Name: tipo_recurso; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY tipo_recurso (id_tp_recurso, nb_tp_recurso, st_tp_recurso) FROM stdin;
+1	ORDINARIO	t
+2	ADICIONAL	t
+\.
+
+
+--
+-- TOC entry 2168 (class 0 OID 0)
+-- Dependencies: 191
+-- Name: tipo_recurso_id_tp_recurso_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tipo_recurso_id_tp_recurso_seq', 2, true);
+
+
+SET search_path = seguridad, pg_catalog;
+
+--
+-- TOC entry 2124 (class 0 OID 36911)
+-- Dependencies: 192 2133
+-- Data for Name: authassignment; Type: TABLE DATA; Schema: seguridad; Owner: postgres
+--
+
+COPY authassignment (itemname, userid, bizrule, data, usu_aud_id, usuario_id_aud) FROM stdin;
+administrador	1	\N	N;	\N	\N
+administrador	141	\N	N;	\N	\N
+\.
+
+
+--
+-- TOC entry 2125 (class 0 OID 36917)
+-- Dependencies: 193 2133
+-- Data for Name: authitem; Type: TABLE DATA; Schema: seguridad; Owner: postgres
+--
+
+COPY authitem (name, type, description, bizrule, data, usuario_id_aud) FROM stdin;
+guest	2	guest user	return Yii::app()->user->isGuest;	N;	\N
+authenticated	2	authenticated user	return !Yii::app()->user->isGuest;	N;	\N
+rol/authItem/admin	0	Administrar roles de usuario.	\N	N;	\N
+rol/authItem/create	0	Crear rol de usuario	\N	N;	\N
+rol/authItem/createOperacion	0	Crear operaciones de usuarios.	\N	N;	\N
+rol/authItem/createTarea	0	Crear Tareas de usuarios	\N	N;	\N
+rol/authItem/delete	0	Eliminar rol, tarea u operaciones de usuario	\N	N;	\N
+rol/authItem/update	0	Modificar roles de usuario	\N	N;	\N
+rol/authItem/view	0	Mostrar rol	\N	N;	\N
+rol/AuthItem/AdministrarModulos	0			N;	\N
+rol/AuthItem/VerReglas	0			N;	\N
+rol/AuthItem/ViewPermisos	0			N;	\N
+rol/AuthItem/BuscarAcciones	0			N;	\N
+Administrar Usuario	1	Posee todos los permisos para el modulo de usuario		N;	1
+asociado/Asociado/View	0			N;	\N
+asociado/Asociado/Create	0			N;	\N
+asociado/Asociado/Update	0			N;	\N
+asociado/Asociado/Delete	0			N;	\N
+asociado/Asociado/Admin	0			N;	\N
+retiro/Retiro/View	0			N;	\N
+retiro/Retiro/BuscarAsociado	0			N;	\N
+retiro/Retiro/Create	0			N;	\N
+retiro/Retiro/Update	0			N;	\N
+retiro/Retiro/Delete	0			N;	\N
+retiro/Retiro/Admin	0			N;	\N
+retiro/Retiro/CargarTipoPrestamo	0			N;	\N
+aporte/Aporte/View	0			N;	\N
+aporte/Aporte/Create	0			N;	\N
+aporte/Aporte/Update	0			N;	\N
+aporte/Aporte/Delete	0			N;	\N
+aporte/Aporte/Admin	0			N;	\N
+aporte/Aporte/BuscarAsociado	0			N;	\N
+aporte/AuxCmAporte/Create	0			N;	\N
+aporte/AuxCmAporte/Admin	0			N;	\N
+aporte/AuxCmAporte/Cancelar	0			N;	\N
+aporte/AuxCmAporte/UpdateGrid	0			N;	\N
+aporte/AuxCmAporte/ValidateGrid	0			N;	\N
+aporte/AuxCmAporte/MigrarDatosAporte	0			N;	\N
+aporte/AuxCmAporte/DescargarTxt	0			N;	\N
+reporte/Reportes/PdfEstCtaInd	0			N;	\N
+reporte/Reportes/PdfMovAsoc	0			N;	\N
+prestamo/Pago/View	0			N;	\N
+prestamo/Pago/Create	0			N;	\N
+prestamo/Pago/CargaPagos	0			N;	\N
+prestamo/Pago/AdminCm	0			N;	\N
+prestamo/Pago/MigrarCm	0			N;	\N
+prestamo/Pago/Cancelar	0			N;	\N
+prestamo/Pago/ValidateGrid	0			N;	\N
+prestamo/Pago/UpdateGrid	0			N;	\N
+prestamo/Pago/Update	0			N;	\N
+prestamo/Pago/Delete	0			N;	\N
+prestamo/Pago/Admin	0			N;	\N
+prestamo/Prestamo/View	0			N;	\N
+prestamo/Prestamo/Create	0			N;	\N
+prestamo/Prestamo/BuscarAsociado	0			N;	\N
+prestamo/Prestamo/Liquidar	0			N;	\N
+prestamo/Prestamo/archivoRetencionesExcel	0			N;	\N
+prestamo/Prestamo/archivoRetencionesTxt	0			N;	\N
+prestamo/Prestamo/Update	0			N;	\N
+prestamo/Prestamo/Delete	0			N;	\N
+prestamo/Prestamo/Admin	0			N;	\N
+dividendos/Utilidad/CalcularDividendosAnual	0			N;	\N
+dividendos/Utilidad/CalcularDividendosMensual	0			N;	\N
+administracion/MMenus/View	0			N;	\N
+administracion/MMenus/Create	0			N;	\N
+administracion/MMenus/Update	0			N;	\N
+administracion/MMenus/AgregarItems	0			N;	\N
+administracion/MMenus/SubirOrden	0			N;	\N
+administracion/MMenus/BajarOrden	0			N;	\N
+administracion/MMenus/Delete	0			N;	\N
+administracion/MMenus/Index	0			N;	\N
+administracion/MMenus/Admin	0			N;	\N
+administracion/RMenusAuthitem/View	0			N;	\N
+administracion/RMenusAuthitem/Create	0			N;	\N
+administracion/RMenusAuthitem/Update	0			N;	\N
+administracion/RMenusAuthitem/Delete	0			N;	\N
+administracion/RMenusAuthitem/SubirOrden	0			N;	\N
+administracion/RMenusAuthitem/BajarOrden	0			N;	\N
+administracion/RMenusAuthitem/Index	0			N;	\N
+administracion/RMenusAuthitem/Admin	0			N;	\N
+prestamo/TipoPrestamo/View	0			N;	\N
+prestamo/TipoPrestamo/Create	0			N;	\N
+prestamo/TipoPrestamo/Update	0			N;	\N
+prestamo/TipoPrestamo/Delete	0			N;	\N
+prestamo/TipoPrestamo/Index	0			N;	\N
+prestamo/TipoPrestamo/Admin	0			N;	\N
+principal/PuntoCuenta/View	0			N;	\N
+principal/PuntoCuenta/Create	0			N;	\N
+principal/PuntoCuenta/Update	0			N;	\N
+principal/PuntoCuenta/Delete	0			N;	\N
+principal/PuntoCuenta/Index	0			N;	\N
+Administrar Roles	1	Posee todos los permisos del modulo Roles		N;	1
+principal/PuntoCuenta/Admin	0			N;	\N
+principal/Contrato/View	0			N;	\N
+principal/Contrato/Create	0			N;	\N
+principal/Contrato/Update	0			N;	\N
+principal/Contrato/Delete	0			N;	\N
+principal/Contrato/Index	0			N;	\N
+principal/Contrato/Admin	0			N;	\N
+usuarios/User/Admin	0			N;	\N
+usuarios/User/Update	0			N;	\N
+usuarios/User/View	0			N;	\N
+usuarios/User/Create	0			N;	\N
+principal/Addendum/View	0			N;	\N
+principal/Addendum/Create	0			N;	\N
+principal/Addendum/Update	0			N;	\N
+principal/Addendum/Delete	0			N;	\N
+principal/Addendum/Index	0			N;	\N
+principal/Addendum/Admin	0			N;	\N
+principal/Contrato/AdminG	0			N;	\N
+principal/PuntoCuenta/ImprimirPdf	0	Imprimir Punto de Cuenta (PDF)		N;	\N
+administrador	2	Posee todos los privilegios		N;	1
+\.
+
+
+--
+-- TOC entry 2126 (class 0 OID 36923)
+-- Dependencies: 194 2133
+-- Data for Name: authitemchild; Type: TABLE DATA; Schema: seguridad; Owner: postgres
+--
+
+COPY authitemchild (parent, child, usuario_id_aud) FROM stdin;
+Administrar Roles	rol/authItem/admin	\N
+Administrar Roles	rol/AuthItem/AdministrarModulos	\N
+Administrar Roles	rol/AuthItem/BuscarAcciones	\N
+Administrar Roles	rol/authItem/create	\N
+Administrar Roles	rol/authItem/createOperacion	\N
+Administrar Roles	rol/authItem/createTarea	\N
+Administrar Roles	rol/authItem/delete	\N
+Administrar Roles	rol/authItem/update	\N
+Administrar Roles	rol/AuthItem/VerReglas	\N
+Administrar Roles	rol/authItem/view	\N
+Administrar Roles	rol/AuthItem/ViewPermisos	\N
+Administrar Usuario	usuarios/User/Admin	\N
+Administrar Usuario	usuarios/User/Update	\N
+Administrar Usuario	usuarios/User/View	\N
+Administrar Usuario	usuarios/User/Create	\N
+administrador	Administrar Roles	\N
+administrador	Administrar Usuario	\N
+administrador	administracion/MMenus/Admin	\N
+administrador	administracion/MMenus/AgregarItems	\N
+administrador	administracion/MMenus/BajarOrden	\N
+administrador	administracion/MMenus/Create	\N
+administrador	administracion/MMenus/Delete	\N
+administrador	administracion/MMenus/Index	\N
+administrador	administracion/MMenus/SubirOrden	\N
+administrador	administracion/MMenus/Update	\N
+administrador	administracion/MMenus/View	\N
+administrador	administracion/RMenusAuthitem/Admin	\N
+administrador	administracion/RMenusAuthitem/BajarOrden	\N
+administrador	administracion/RMenusAuthitem/Create	\N
+administrador	administracion/RMenusAuthitem/Delete	\N
+administrador	administracion/RMenusAuthitem/Index	\N
+administrador	administracion/RMenusAuthitem/SubirOrden	\N
+administrador	administracion/RMenusAuthitem/Update	\N
+administrador	administracion/RMenusAuthitem/View	\N
+administrador	aporte/Aporte/Admin	\N
+administrador	aporte/Aporte/BuscarAsociado	\N
+administrador	aporte/Aporte/Create	\N
+administrador	aporte/Aporte/Delete	\N
+administrador	aporte/Aporte/Update	\N
+administrador	aporte/Aporte/View	\N
+administrador	aporte/AuxCmAporte/Admin	\N
+administrador	aporte/AuxCmAporte/Cancelar	\N
+administrador	aporte/AuxCmAporte/Create	\N
+administrador	aporte/AuxCmAporte/DescargarTxt	\N
+administrador	aporte/AuxCmAporte/MigrarDatosAporte	\N
+administrador	aporte/AuxCmAporte/UpdateGrid	\N
+administrador	aporte/AuxCmAporte/ValidateGrid	\N
+administrador	asociado/Asociado/Admin	\N
+administrador	asociado/Asociado/Create	\N
+administrador	asociado/Asociado/Delete	\N
+administrador	asociado/Asociado/Update	\N
+administrador	asociado/Asociado/View	\N
+administrador	dividendos/Utilidad/CalcularDividendosAnual	\N
+administrador	dividendos/Utilidad/CalcularDividendosMensual	\N
+administrador	prestamo/Pago/Admin	\N
+administrador	prestamo/Pago/AdminCm	\N
+administrador	prestamo/Pago/Cancelar	\N
+administrador	prestamo/Pago/CargaPagos	\N
+administrador	prestamo/Pago/Create	\N
+administrador	prestamo/Pago/Delete	\N
+administrador	prestamo/Pago/MigrarCm	\N
+administrador	prestamo/Pago/Update	\N
+administrador	prestamo/Pago/UpdateGrid	\N
+administrador	prestamo/Pago/ValidateGrid	\N
+administrador	prestamo/Pago/View	\N
+administrador	prestamo/Prestamo/Admin	\N
+administrador	prestamo/Prestamo/archivoRetencionesExcel	\N
+administrador	prestamo/Prestamo/archivoRetencionesTxt	\N
+administrador	prestamo/Prestamo/BuscarAsociado	\N
+administrador	prestamo/Prestamo/Create	\N
+administrador	prestamo/Prestamo/Delete	\N
+administrador	prestamo/Prestamo/Liquidar	\N
+administrador	prestamo/Prestamo/Update	\N
+administrador	prestamo/Prestamo/View	\N
+administrador	prestamo/TipoPrestamo/Admin	\N
+administrador	prestamo/TipoPrestamo/Create	\N
+administrador	prestamo/TipoPrestamo/Delete	\N
+administrador	prestamo/TipoPrestamo/Index	\N
+administrador	prestamo/TipoPrestamo/Update	\N
+administrador	prestamo/TipoPrestamo/View	\N
+administrador	principal/Addendum/Admin	\N
+administrador	principal/Addendum/Create	\N
+administrador	principal/Addendum/Delete	\N
+administrador	principal/Addendum/Index	\N
+administrador	principal/Addendum/Update	\N
+administrador	principal/Addendum/View	\N
+administrador	principal/Contrato/Admin	\N
+administrador	principal/Contrato/AdminG	\N
+administrador	principal/Contrato/Create	\N
+administrador	principal/Contrato/Delete	\N
+administrador	principal/Contrato/Index	\N
+administrador	principal/Contrato/Update	\N
+administrador	principal/Contrato/View	\N
+administrador	principal/PuntoCuenta/Admin	\N
+administrador	principal/PuntoCuenta/Create	\N
+administrador	principal/PuntoCuenta/Delete	\N
+administrador	principal/PuntoCuenta/ImprimirPdf	\N
+administrador	principal/PuntoCuenta/Index	\N
+administrador	principal/PuntoCuenta/Update	\N
+administrador	principal/PuntoCuenta/View	\N
+administrador	reporte/Reportes/PdfEstCtaInd	\N
+administrador	reporte/Reportes/PdfMovAsoc	\N
+administrador	retiro/Retiro/Admin	\N
+administrador	retiro/Retiro/BuscarAsociado	\N
+administrador	retiro/Retiro/CargarTipoPrestamo	\N
+administrador	retiro/Retiro/Create	\N
+administrador	retiro/Retiro/Delete	\N
+administrador	retiro/Retiro/Update	\N
+administrador	retiro/Retiro/View	\N
+administrador	rol/authItem/admin	\N
+administrador	rol/AuthItem/AdministrarModulos	\N
+administrador	rol/AuthItem/BuscarAcciones	\N
+administrador	rol/authItem/create	\N
+administrador	rol/authItem/createOperacion	\N
+administrador	rol/authItem/createTarea	\N
+administrador	rol/authItem/delete	\N
+administrador	rol/authItem/update	\N
+administrador	rol/AuthItem/VerReglas	\N
+administrador	rol/authItem/view	\N
+administrador	rol/AuthItem/ViewPermisos	\N
+administrador	usuarios/User/Admin	\N
+administrador	usuarios/User/Create	\N
+administrador	usuarios/User/Update	\N
+administrador	usuarios/User/View	\N
+\.
+
+
+--
+-- TOC entry 2127 (class 0 OID 36926)
+-- Dependencies: 195 2133
+-- Data for Name: m_menus; Type: TABLE DATA; Schema: seguridad; Owner: postgres
+--
+
+COPY m_menus (id_menu, id_menu_padre, nombre_menu, orden, icono, id_usuario_creador, id_usuario_modificador, fecha_creacion, fecha_modificacion, color_texto, color_interfaz) FROM stdin;
+1	\N	MENU PRINCIPAL	\N	\N	\N	\N	\N	\N	\N	\N
+2	1	Configuracion	2	list layout icon black	\N	\N	\N	\N	black	red
+19	1	Puntos de  Cuenta	1	file text outline icon	\N	\N	\N	\N	black	red
+\.
+
+
+--
+-- TOC entry 2169 (class 0 OID 0)
+-- Dependencies: 196
+-- Name: m_menus_id_menu_seq; Type: SEQUENCE SET; Schema: seguridad; Owner: postgres
+--
+
+SELECT pg_catalog.setval('m_menus_id_menu_seq', 19, true);
+
+
+--
+-- TOC entry 2129 (class 0 OID 36934)
+-- Dependencies: 197 2133
+-- Data for Name: r_menus_authitem; Type: TABLE DATA; Schema: seguridad; Owner: postgres
+--
+
+COPY r_menus_authitem (id_item_authitem, id_menu, orden, nombre_item, operacion, fecha_creacion, fecha_expiracion, estatus_usuario_activo, id_usuario_creador, id_usuario_modificador, ruta_imagen) FROM stdin;
+1	2	1	Administrar Perfiles	rol/authItem/admin	\N	\N	t	\N	\N	\N
+63	2	2	Administrar Menus	administracion/MMenus/Admin	\N	\N	t	\N	\N	\N
+70	19	1	Listar Puntos de Cuenta	principal/PuntoCuenta/Admin	\N	\N	t	\N	\N	\N
+71	19	2	Registrar Punto de Cuenta	principal/PuntoCuenta/Create	\N	\N	t	\N	\N	\N
+72	2	3	Administrar Usuarios	usuarios/User/Admin	\N	\N	t	\N	\N	\N
+73	19	3	Listar Contratos	principal/Contrato/AdminG	\N	\N	t	\N	\N	\N
+\.
+
+
+--
+-- TOC entry 2170 (class 0 OID 0)
+-- Dependencies: 198
+-- Name: r_menus_authitem_id_item_authitem_seq; Type: SEQUENCE SET; Schema: seguridad; Owner: postgres
+--
+
+SELECT pg_catalog.setval('r_menus_authitem_id_item_authitem_seq', 73, true);
+
+
+--
+-- TOC entry 2131 (class 0 OID 36943)
+-- Dependencies: 199 2133
+-- Data for Name: usuario; Type: TABLE DATA; Schema: seguridad; Owner: postgres
+--
+
+COPY usuario (id_usuario, tx_usuario, tx_contrasena, bo_activado, persona_id, st_usuario, usuario_id_aud, institucion_id) FROM stdin;
+1	admin	e10adc3949ba59abbe56e057f20f883e	t	1	t	1	5
+141	htorrealba	e10adc3949ba59abbe56e057f20f883e	t	1152	t	1	\N
+\.
+
+
+--
+-- TOC entry 2171 (class 0 OID 0)
+-- Dependencies: 200
+-- Name: usuario_id_usuario_seq; Type: SEQUENCE SET; Schema: seguridad; Owner: postgres
+--
+
+SELECT pg_catalog.setval('usuario_id_usuario_seq', 141, true);
+
+
+SET search_path = geo_ubicacion, pg_catalog;
+
+--
+-- TOC entry 1910 (class 2606 OID 36967)
+-- Dependencies: 164 164 2134
+-- Name: geo_estado_pkey; Type: CONSTRAINT; Schema: geo_ubicacion; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY geo_estado
+    ADD CONSTRAINT geo_estado_pkey PRIMARY KEY (geo_estado_id);
+
+
+--
+-- TOC entry 1912 (class 2606 OID 36969)
+-- Dependencies: 166 166 2134
+-- Name: geo_municipio_pkey; Type: CONSTRAINT; Schema: geo_ubicacion; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY geo_municipio
+    ADD CONSTRAINT geo_municipio_pkey PRIMARY KEY (geo_municipio_id);
+
+
+--
+-- TOC entry 1914 (class 2606 OID 36971)
+-- Dependencies: 168 168 2134
+-- Name: geo_parroquia_pkey; Type: CONSTRAINT; Schema: geo_ubicacion; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY geo_parroquia
+    ADD CONSTRAINT geo_parroquia_pkey PRIMARY KEY (geo_parroquia_id);
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- TOC entry 1916 (class 2606 OID 36973)
+-- Dependencies: 169 169 2134
+-- Name: addendum_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY addendum
+    ADD CONSTRAINT addendum_pkey PRIMARY KEY (id_addendum);
+
+
+--
+-- TOC entry 1928 (class 2606 OID 36975)
+-- Dependencies: 173 173 2134
+-- Name: estatus_addendum_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY estatus_addendum
+    ADD CONSTRAINT estatus_addendum_pkey PRIMARY KEY (id_estatus_addendum);
+
+
+--
+-- TOC entry 1943 (class 2606 OID 36977)
+-- Dependencies: 183 183 2134
+-- Name: persona_cedula_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY persona
+    ADD CONSTRAINT persona_cedula_key UNIQUE (cedula);
+
+
+--
+-- TOC entry 1930 (class 2606 OID 36979)
+-- Dependencies: 175 175 2134
+-- Name: pk_cont; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY estatus_contrato
+    ADD CONSTRAINT pk_cont PRIMARY KEY (id_estatus_contrato);
+
+
+--
+-- TOC entry 1924 (class 2606 OID 36981)
+-- Dependencies: 171 171 2134
+-- Name: pk_contrato; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY contrato
+    ADD CONSTRAINT pk_contrato PRIMARY KEY (id_contrato);
+
+
+--
+-- TOC entry 1932 (class 2606 OID 36983)
+-- Dependencies: 177 177 2134
+-- Name: pk_funcionario; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY funcionario
+    ADD CONSTRAINT pk_funcionario PRIMARY KEY (id_funcionario);
+
+
+--
+-- TOC entry 1936 (class 2606 OID 36985)
+-- Dependencies: 179 179 2134
+-- Name: pk_inst; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY institucion
+    ADD CONSTRAINT pk_inst PRIMARY KEY (id_institucion);
+
+
+--
+-- TOC entry 1938 (class 2606 OID 36987)
+-- Dependencies: 181 181 2134
+-- Name: pk_moneda; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY moneda
+    ADD CONSTRAINT pk_moneda PRIMARY KEY (id_moneda);
+
+
+--
+-- TOC entry 1945 (class 2606 OID 36989)
+-- Dependencies: 183 183 2134
+-- Name: pk_persona; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY persona
+    ADD CONSTRAINT pk_persona PRIMARY KEY (id_persona);
+
+
+--
+-- TOC entry 1948 (class 2606 OID 36991)
+-- Dependencies: 185 185 2134
+-- Name: pk_punto_cuenta; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY punto_cuenta
+    ADD CONSTRAINT pk_punto_cuenta PRIMARY KEY (id_punto_cuenta);
+
+
+--
+-- TOC entry 1956 (class 2606 OID 36993)
+-- Dependencies: 190 190 2134
+-- Name: pk_tipo_recurso; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY tipo_recurso
+    ADD CONSTRAINT pk_tipo_recurso PRIMARY KEY (id_tp_recurso);
+
+
+--
+-- TOC entry 1954 (class 2606 OID 36995)
+-- Dependencies: 188 188 2134
+-- Name: pk_tp_ct; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY tipo_contrato
+    ADD CONSTRAINT pk_tp_ct PRIMARY KEY (id_tp_contrato);
+
+
+--
+-- TOC entry 1952 (class 2606 OID 36997)
+-- Dependencies: 187 187 2134
+-- Name: session_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY session
+    ADD CONSTRAINT session_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 1926 (class 2606 OID 36999)
+-- Dependencies: 171 171 2134
+-- Name: uq_contrato_id_contrato; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY contrato
+    ADD CONSTRAINT uq_contrato_id_contrato UNIQUE (id_contrato);
+
+
+--
+-- TOC entry 1934 (class 2606 OID 37001)
+-- Dependencies: 177 177 2134
+-- Name: uq_funcionario_id_funcionario; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY funcionario
+    ADD CONSTRAINT uq_funcionario_id_funcionario UNIQUE (id_funcionario);
+
+
+--
+-- TOC entry 1940 (class 2606 OID 37003)
+-- Dependencies: 181 181 2134
+-- Name: uq_moneda_id_moneda; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY moneda
+    ADD CONSTRAINT uq_moneda_id_moneda UNIQUE (id_moneda);
+
+
+--
+-- TOC entry 1950 (class 2606 OID 37005)
+-- Dependencies: 185 185 2134
+-- Name: uq_punto_cuenta_id_punto_cuenta; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY punto_cuenta
+    ADD CONSTRAINT uq_punto_cuenta_id_punto_cuenta UNIQUE (id_punto_cuenta);
+
+
+--
+-- TOC entry 1958 (class 2606 OID 37007)
+-- Dependencies: 190 190 2134
+-- Name: uq_tipo_recurso_id_tp_recurso; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY tipo_recurso
+    ADD CONSTRAINT uq_tipo_recurso_id_tp_recurso UNIQUE (id_tp_recurso);
+
+
+SET search_path = seguridad, pg_catalog;
+
+--
+-- TOC entry 1960 (class 2606 OID 37009)
+-- Dependencies: 192 192 192 2134
+-- Name: AuthAssignment_pkey; Type: CONSTRAINT; Schema: seguridad; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY authassignment
+    ADD CONSTRAINT "AuthAssignment_pkey" PRIMARY KEY (itemname, userid);
+
+
+--
+-- TOC entry 1964 (class 2606 OID 37011)
+-- Dependencies: 194 194 194 2134
+-- Name: AuthItemChild_pkey; Type: CONSTRAINT; Schema: seguridad; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY authitemchild
+    ADD CONSTRAINT "AuthItemChild_pkey" PRIMARY KEY (parent, child);
+
+
+--
+-- TOC entry 1962 (class 2606 OID 37013)
+-- Dependencies: 193 193 2134
+-- Name: AuthItem_pkey; Type: CONSTRAINT; Schema: seguridad; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY authitem
+    ADD CONSTRAINT "AuthItem_pkey" PRIMARY KEY (name);
+
+
+--
+-- TOC entry 1966 (class 2606 OID 37015)
+-- Dependencies: 195 195 2134
+-- Name: m_menus_pkey; Type: CONSTRAINT; Schema: seguridad; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY m_menus
+    ADD CONSTRAINT m_menus_pkey PRIMARY KEY (id_menu);
+
+
+--
+-- TOC entry 1968 (class 2606 OID 37017)
+-- Dependencies: 197 197 2134
+-- Name: r_menu_authitem_pkey; Type: CONSTRAINT; Schema: seguridad; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY r_menus_authitem
+    ADD CONSTRAINT r_menu_authitem_pkey PRIMARY KEY (id_item_authitem);
+
+
+--
+-- TOC entry 1970 (class 2606 OID 37019)
+-- Dependencies: 199 199 2134
+-- Name: usuario_pkey; Type: CONSTRAINT; Schema: seguridad; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY usuario
+    ADD CONSTRAINT usuario_pkey PRIMARY KEY (id_usuario);
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- TOC entry 1917 (class 1259 OID 37020)
+-- Dependencies: 169 2134
+-- Name: fki_add_cont; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX fki_add_cont ON addendum USING btree (id_contrato);
+
+
+--
+-- TOC entry 1920 (class 1259 OID 37021)
+-- Dependencies: 171 2134
+-- Name: fki_cont_edo; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX fki_cont_edo ON contrato USING btree (id_estado);
+
+
+--
+-- TOC entry 1921 (class 1259 OID 37022)
+-- Dependencies: 171 2134
+-- Name: fki_cont_mcp; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX fki_cont_mcp ON contrato USING btree (id_municipio);
+
+
+--
+-- TOC entry 1922 (class 1259 OID 37023)
+-- Dependencies: 171 2134
+-- Name: fki_cont_prq; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX fki_cont_prq ON contrato USING btree (id_parroquia);
+
+
+--
+-- TOC entry 1918 (class 1259 OID 37024)
+-- Dependencies: 169 2134
+-- Name: fki_pto_add; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX fki_pto_add ON addendum USING btree (id_punto_cuenta);
+
+
+--
+-- TOC entry 1919 (class 1259 OID 37025)
+-- Dependencies: 169 2134
+-- Name: fki_stadd; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX fki_stadd ON addendum USING btree (id_estatus_addendum);
+
+
+--
+-- TOC entry 1946 (class 1259 OID 37026)
+-- Dependencies: 185 2134
+-- Name: id_pto_cta_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX id_pto_cta_idx ON punto_cuenta USING btree (id_punto_cuenta);
+
+
+--
+-- TOC entry 1941 (class 1259 OID 37027)
+-- Dependencies: 183 2134
+-- Name: persona_cedula_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX persona_cedula_idx ON persona USING btree (cedula);
+
+
+SET search_path = geo_ubicacion, pg_catalog;
+
+--
+-- TOC entry 1971 (class 2606 OID 37028)
+-- Dependencies: 164 166 1909 2134
+-- Name: fk_geo_estado_ide; Type: FK CONSTRAINT; Schema: geo_ubicacion; Owner: postgres
+--
+
+ALTER TABLE ONLY geo_municipio
+    ADD CONSTRAINT fk_geo_estado_ide FOREIGN KEY (geo_estado_id) REFERENCES geo_estado(geo_estado_id);
+
+
+--
+-- TOC entry 1972 (class 2606 OID 37033)
+-- Dependencies: 168 166 1911 2134
+-- Name: fk_geo_municipio_id; Type: FK CONSTRAINT; Schema: geo_ubicacion; Owner: postgres
+--
+
+ALTER TABLE ONLY geo_parroquia
+    ADD CONSTRAINT fk_geo_municipio_id FOREIGN KEY (geo_municipio_id) REFERENCES geo_municipio(geo_municipio_id);
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- TOC entry 1973 (class 2606 OID 45339)
+-- Dependencies: 1923 171 169 2134
+-- Name: add_cont; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY addendum
+    ADD CONSTRAINT add_cont FOREIGN KEY (id_contrato) REFERENCES contrato(id_contrato);
+
+
+--
+-- TOC entry 1976 (class 2606 OID 37043)
+-- Dependencies: 1909 164 171 2134
+-- Name: fk_cont_edo; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY contrato
+    ADD CONSTRAINT fk_cont_edo FOREIGN KEY (id_estado) REFERENCES geo_ubicacion.geo_estado(geo_estado_id);
+
+
+--
+-- TOC entry 1977 (class 2606 OID 37048)
+-- Dependencies: 171 166 1911 2134
+-- Name: fk_cont_mcp; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY contrato
+    ADD CONSTRAINT fk_cont_mcp FOREIGN KEY (id_municipio) REFERENCES geo_ubicacion.geo_municipio(geo_municipio_id);
+
+
+--
+-- TOC entry 1978 (class 2606 OID 37053)
+-- Dependencies: 168 1913 171 2134
+-- Name: fk_cont_prq; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY contrato
+    ADD CONSTRAINT fk_cont_prq FOREIGN KEY (id_parroquia) REFERENCES geo_ubicacion.geo_parroquia(geo_parroquia_id);
+
+
+--
+-- TOC entry 1979 (class 2606 OID 37058)
+-- Dependencies: 1929 171 175 2134
+-- Name: fk_id_estatus; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY contrato
+    ADD CONSTRAINT fk_id_estatus FOREIGN KEY (id_estatus) REFERENCES estatus_contrato(id_estatus_contrato);
+
+
+--
+-- TOC entry 1983 (class 2606 OID 37063)
+-- Dependencies: 177 185 1931 2134
+-- Name: fk_id_funcionario; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY punto_cuenta
+    ADD CONSTRAINT fk_id_funcionario FOREIGN KEY (id_funcionario) REFERENCES funcionario(id_funcionario);
+
+
+--
+-- TOC entry 1980 (class 2606 OID 37068)
+-- Dependencies: 171 1935 179 2134
+-- Name: fk_id_institucion; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY contrato
+    ADD CONSTRAINT fk_id_institucion FOREIGN KEY (id_institucion) REFERENCES institucion(id_institucion);
+
+
+--
+-- TOC entry 1981 (class 2606 OID 37073)
+-- Dependencies: 185 171 1947 2134
+-- Name: fk_id_punto_cuenta; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY contrato
+    ADD CONSTRAINT fk_id_punto_cuenta FOREIGN KEY (id_punto_cuenta) REFERENCES punto_cuenta(id_punto_cuenta);
+
+
+--
+-- TOC entry 1984 (class 2606 OID 37078)
+-- Dependencies: 185 1947 185 2134
+-- Name: fk_id_punto_padre; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY punto_cuenta
+    ADD CONSTRAINT fk_id_punto_padre FOREIGN KEY (id_punto_padre) REFERENCES punto_cuenta(id_punto_cuenta);
+
+
+--
+-- TOC entry 1982 (class 2606 OID 37083)
+-- Dependencies: 188 171 1953 2134
+-- Name: fk_id_tp_contrato; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY contrato
+    ADD CONSTRAINT fk_id_tp_contrato FOREIGN KEY (id_tp_contrato) REFERENCES tipo_contrato(id_tp_contrato);
+
+
+--
+-- TOC entry 1985 (class 2606 OID 37088)
+-- Dependencies: 181 1937 185 2134
+-- Name: fk_id_tp_moneda; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY punto_cuenta
+    ADD CONSTRAINT fk_id_tp_moneda FOREIGN KEY (id_tp_moneda) REFERENCES moneda(id_moneda);
+
+
+--
+-- TOC entry 1986 (class 2606 OID 37093)
+-- Dependencies: 185 1955 190 2134
+-- Name: fk_id_tp_recurso; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY punto_cuenta
+    ADD CONSTRAINT fk_id_tp_recurso FOREIGN KEY (id_tp_recurso) REFERENCES tipo_recurso(id_tp_recurso);
+
+
+--
+-- TOC entry 1974 (class 2606 OID 45344)
+-- Dependencies: 1947 169 185 2134
+-- Name: pto_add; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY addendum
+    ADD CONSTRAINT pto_add FOREIGN KEY (id_punto_cuenta) REFERENCES punto_cuenta(id_punto_cuenta);
+
+
+--
+-- TOC entry 1975 (class 2606 OID 45349)
+-- Dependencies: 1927 173 169 2134
+-- Name: stadd; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY addendum
+    ADD CONSTRAINT stadd FOREIGN KEY (id_estatus_addendum) REFERENCES estatus_addendum(id_estatus_addendum);
+
+
+SET search_path = seguridad, pg_catalog;
+
+--
+-- TOC entry 1987 (class 2606 OID 37108)
+-- Dependencies: 1961 192 193 2134
+-- Name: AuthAssignment_itemname_fkey; Type: FK CONSTRAINT; Schema: seguridad; Owner: postgres
+--
+
+ALTER TABLE ONLY authassignment
+    ADD CONSTRAINT "AuthAssignment_itemname_fkey" FOREIGN KEY (itemname) REFERENCES authitem(name) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 1990 (class 2606 OID 37113)
+-- Dependencies: 194 1961 193 2134
+-- Name: AuthItemChild_child_fkey; Type: FK CONSTRAINT; Schema: seguridad; Owner: postgres
+--
+
+ALTER TABLE ONLY authitemchild
+    ADD CONSTRAINT "AuthItemChild_child_fkey" FOREIGN KEY (child) REFERENCES authitem(name) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 1991 (class 2606 OID 37118)
+-- Dependencies: 193 194 1961 2134
+-- Name: AuthItemChild_parent_fkey; Type: FK CONSTRAINT; Schema: seguridad; Owner: postgres
+--
+
+ALTER TABLE ONLY authitemchild
+    ADD CONSTRAINT "AuthItemChild_parent_fkey" FOREIGN KEY (parent) REFERENCES authitem(name) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 1988 (class 2606 OID 37123)
+-- Dependencies: 1969 199 192 2134
+-- Name: authassignment_userid_fkey; Type: FK CONSTRAINT; Schema: seguridad; Owner: postgres
+--
+
+ALTER TABLE ONLY authassignment
+    ADD CONSTRAINT authassignment_userid_fkey FOREIGN KEY (userid) REFERENCES usuario(id_usuario);
+
+
+--
+-- TOC entry 1989 (class 2606 OID 37128)
+-- Dependencies: 199 192 1969 2134
+-- Name: authassignment_userid_fkey1; Type: FK CONSTRAINT; Schema: seguridad; Owner: postgres
+--
+
+ALTER TABLE ONLY authassignment
+    ADD CONSTRAINT authassignment_userid_fkey1 FOREIGN KEY (userid) REFERENCES usuario(id_usuario);
+
+
+--
+-- TOC entry 1992 (class 2606 OID 37133)
+-- Dependencies: 1965 195 195 2134
+-- Name: m_menus_id_menu_padre_fkey; Type: FK CONSTRAINT; Schema: seguridad; Owner: postgres
+--
+
+ALTER TABLE ONLY m_menus
+    ADD CONSTRAINT m_menus_id_menu_padre_fkey FOREIGN KEY (id_menu_padre) REFERENCES m_menus(id_menu);
+
+
+--
+-- TOC entry 1993 (class 2606 OID 37138)
+-- Dependencies: 197 195 1965 2134
+-- Name: r_menus_authitem_id_menu_fkey; Type: FK CONSTRAINT; Schema: seguridad; Owner: postgres
+--
+
+ALTER TABLE ONLY r_menus_authitem
+    ADD CONSTRAINT r_menus_authitem_id_menu_fkey FOREIGN KEY (id_menu) REFERENCES m_menus(id_menu);
+
+
+--
+-- TOC entry 2139 (class 0 OID 0)
+-- Dependencies: 8
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+-- Completed on 2016-01-29 10:07:39 VET
+
+--
+-- PostgreSQL database dump complete
+--
+
